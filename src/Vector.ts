@@ -63,21 +63,11 @@ export class Vector2D {
         else
             return new Vector2D(this.x / x, this.y / y);
     }
-    dot(other: Vector2D): number {
-        return this.x * other.x + this.y * other.y;
-    }
-    cross(other: Vector2D): number {
-        return this.x * other.y - this.y * other.x;
-    }
-    magnitude(): number {
-        return Math.sqrt(this.x * this.x + this.y * this.y);
-    }
-    normalize(): Vector2D {
-        return this.divide(this.magnitude());
-    }
-    angle(): number {
-        return Math.atan2(this.y, this.x);
-    }
+    dot(other: Vector2D): number { return this.x * other.x + this.y * other.y; }
+    cross(other: Vector2D): number { return this.x * other.y - this.y * other.x; }
+    magnitude(): number { return Math.sqrt(this.x * this.x + this.y * this.y); }
+    normalize(): Vector2D { return this.divide(this.magnitude()); }
+    angle(): number { return Math.atan2(this.y, this.x); }
     rotate(angle: number): Vector2D {
         return new Vector2D(
             this.x * Math.cos(angle) - this.y * Math.sin(angle),
@@ -85,29 +75,16 @@ export class Vector2D {
         );
     }
     reflect(normal: Vector2D): Vector2D {
-        return this.subtract(normal.multiply(2 * this.dot(normal)).divide(Math.pow(normal.magnitude(), 2)) );
+        return this.subtract(normal.multiply(2 * this.dot(normal)));
     }
-    length(): number {
-        return this.magnitude();
-    }
-    distance(other: Vector2D): number {
-        return this.subtract(other).magnitude();
-    }
-    equals(other: Vector2D): boolean {
-        return this.x === other.x && this.y === other.y;
-    }
-    clone(): Vector2D {
-        return new Vector2D(this.x, this.y);
-    }
-    toArray(): [number, number] {
-        return [this.x, this.y];
-    }
-    toString(): string {
-        return `(${this.x}, ${this.y})`;
-    }
-    toObject(): { x: number, y: number } {
-        return { x: this.x, y: this.y };
-    }
+    length(): number { return this.magnitude(); }
+    distance(other: Vector2D): number { return this.subtract(other).magnitude(); }
+    invert() { return this.multiply(-1); }
+    equals(other: Vector2D): boolean { return this.x === other.x && this.y === other.y; }
+    clone(): Vector2D { return new Vector2D(this.x, this.y); }
+    toArray(): [number, number] { return [this.x, this.y]; }
+    toString(): string { return `(${this.x}, ${this.y})`; }
+    toObject(): { x: number, y: number } { return { x: this.x, y: this.y }; }
 
     static average(...vectors: Vector2D[]): Vector2D {
        return vectors.reduce((a, b) => a.add(b)).divide(vectors.length);
