@@ -5,8 +5,8 @@ import { Vector2D } from './Vector';
 import { Bar } from './Bar';
 import { Game, score } from './main';
 import { Bubble } from './Bubble';
-import { Polygon } from './Polygon';
 import { Line } from './types';
+import { ArenaWall } from './Arena';
 
 export const BALL_VERTICES = 10;
 
@@ -25,13 +25,12 @@ export class Ball extends GameObject {
         this._move = true;
         this.height = this.displayObject.height;
         this.width = this.displayObject.width;
-        this.collider.polygon = new BallPolygon(this.center, this.width + 1, BALL_VERTICES, []);
+        this.collider.polygon = new BallPolygon(this.center, this.width, BALL_VERTICES, []);
         this.collider.updateBoundingBox();
         
         const blueTranform = new PIXI.ColorMatrixFilter();
         blueTranform.hue(60, false);
         this.getDisplayObject.filters = [blueTranform];
-        console.log("new Ball: ", this);
     }
 
     getRandomVelocity(): Vector2D {
@@ -82,8 +81,12 @@ export class Ball extends GameObject {
     }
 
     onCollide(target: GameObject, line: Line): void {
-        console.log(this.collider);
-        if (target instanceof Bar || target instanceof Bubble) {
+        if (target instanceof ArenaWall)
+        {
+            this.setVelocity(new Vector2D(this.getVelocity.x, -this.getVelocity.y));
+        }
+        else if (target instanceof Bar || target instanceof Bubble) {
+            console.log(target);
             // where the ball hit
             let collidePoint = this.getCenter.y - (target.getCenter.y);
     
@@ -111,14 +114,5 @@ export class Ball extends GameObject {
                 return;
             }
         }
-        //else if (target instanceof Bubble) {
-        //    
-        //}
     }
-    //onKeyDown(e: KeyboardEvent): void {
-    //    if (e.key === 'w') { this.setCenter(new Vector2D(this.center.x, this.center.y - 3 )); }
-    //    if (e.key === 's') { this.setCenter(new Vector2D(this.center.x, this.center.y + 3 )); }
-    //    if (e.key === 'a') { this.setCenter(new Vector2D(this.center.x - 3, this.center.y )); }
-    //    if (e.key === 'd') { this.setCenter(new Vector2D(this.center.x + 3, this.center.y )); }
-    //}
 }

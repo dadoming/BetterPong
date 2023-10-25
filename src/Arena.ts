@@ -15,9 +15,6 @@ export class ArenaWall extends GameObject {
     updatePolygon(): void {}
 
     onCollide(target: GameObject, line: { start: Vector2D; end: Vector2D; }): void {
-        if (target instanceof Ball)
-        {
-            target.setVelocity(new Vector2D(target.getVelocity.x, target.getVelocity.y * -1));
-        }
+        
     }
 }

@@ -5,8 +5,8 @@ import { BallPolygon } from "./Polygon";
 import { Game } from "./main";
 import { BALL_VERTICES } from "./Ball";
 
-export class Bubble extends GameObject {
 
+export class Bubble extends GameObject {
     constructor(tag: string, texture: PIXI.Texture, center: Vector2D, velocity?: Vector2D) {
         const sprite = PIXI.Sprite.from(texture);
         sprite.anchor.set(0.5);

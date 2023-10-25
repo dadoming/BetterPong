@@ -127,7 +127,8 @@ export class Game {
     };
 
     start() {
-        this.app.ticker.maxFPS = 120;
+        this.app.ticker.minFPS = 60;
+        this.app.ticker.maxFPS = 60;
         this.app.ticker.add((delta) => {
             //if (this.runGame) {
                 this.gameObjects.forEach((gameObject: GameObject) => gameObject.collider.reset());

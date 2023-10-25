@@ -41,7 +41,7 @@ export class Collider {
             const co = ob1.getPolygon.collides(ob2.getPolygon);
             if (co != undefined) 
             {
-                ob1.collider.isCollider = true; 
+                ob1.collider.isCollider = true;
                 ob2.collider.isCollider = true;
 
                 ob1.collider.line = co.obj;
@@ -52,13 +52,9 @@ export class Collider {
 
                 ob1.collider.intersection = co.intersection;
                 ob2.collider.intersection = co.intersection;
-//ob1.collider.lastCollision !== undefined && ob2.collider.lastCollision !== undefined &&
-                if (ob1.collider.lastCollision === ob2.collider && ob2.collider.lastCollision === ob1.collider)
+                if (ob1.collider.lastCollision === ob2.collider && 
+                    ob2.collider.lastCollision === ob1.collider)
                 {
-                    // console.log("------------------")
-                    // console.log(ob1.collider);
-                    // console.log(ob2.collider);
-                    // console.log(ob1.collider.lastCollision !== undefined && ob2.collider.lastCollision !== undefined && (ob1.collider.lastCollision === ob2.collider || ob2.collider.lastCollision === ob1.collider))
                     return (false);
                 }
                 
