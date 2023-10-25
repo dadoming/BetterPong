@@ -6,7 +6,7 @@ import { Game } from './main';
 import { Ball } from './Ball';
 import { ArenaWall } from './Arena';
 
-const BAR_VELOCITY = 4;
+const BAR_VELOCITY = 7;
 
 export class Bar extends GameObject {
 
@@ -27,6 +27,7 @@ export class Bar extends GameObject {
         this.width = this.displayObject.width;
         this.collider.polygon = new BarPolygon(this.center, this.displayObject.width, this.displayObject.height, this.direction);
         this.collider.updateBoundingBox();
+        this.setScale(this.scale - 0.5);
     }
 
     setScaleDisplayObject(scale: number): void {
