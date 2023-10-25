@@ -34,6 +34,7 @@ export class Collider {
         this.center = this.polygon.vertices2D.reduce((a, b) => a.add(b), Vector2D.Zero).divide(this.polygon.vertices2D.length);
     }
 
+    // problem when handling multiple collisions 
     public static collidingObjects(ob1: GameObject, ob2: GameObject): boolean
     {
         if (ob1.collider.boundingBox.collides(ob2.collider.boundingBox))
@@ -57,7 +58,6 @@ export class Collider {
                 {
                     return (false);
                 }
-                
                 ob1.collider.lastCollision = ob2.collider;
                 ob2.collider.lastCollision = ob1.collider;
                 if (ob1?.onCollide)

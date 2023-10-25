@@ -44,7 +44,7 @@ export class Ball extends GameObject {
         this.setCenter(new Vector2D(Game.width / 2, Game.height / 2));
         Game.applyOnAllObjects((obj) => obj.collider.lastCollision = undefined);
         this.velocity = new Vector2D(7.5, -5.5).normalize().multiply(4);
-        //this.velocity = this.getRandomVelocity();
+        this.velocity = this.getRandomVelocity();
         this.acceleration = 1;
         this._move = true;
     }
@@ -83,7 +83,7 @@ export class Ball extends GameObject {
     onCollide(target: GameObject, line: Line): void {
         if (target instanceof ArenaWall)
         {
-            this.setVelocity(new Vector2D(this.getVelocity.x, -this.getVelocity.y));
+            this.velocity.y = -this.velocity.y;        
         }
         else if (target instanceof Bar || target instanceof Bubble) {
             console.log(target);

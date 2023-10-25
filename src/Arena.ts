@@ -1,4 +1,3 @@
-import { Ball } from './Ball';
 import { GameObject } from './GameObject';
 import { ArenaPolygon } from './Polygon';
 import { Vector2D } from './Vector';

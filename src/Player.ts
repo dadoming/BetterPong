@@ -18,22 +18,22 @@ export class Player extends Bar
     onKeyDown(e: KeyboardEvent): void {
         if (this.tag === "Player1")
         {
-            if (e.key === 'w' )          {this.setMove(true); this.setVelocity(UP);}
+            if (e.key === 'w' )         {this.setMove(true); this.setVelocity(UP);}
             if (e.key === 's')          {this.setMove(true); this.setVelocity(DOWN);}
             if (e.key === 'a')          {this.setAcceleration(2);}
 
             if (e.key === 'q')          {
-                const bubble = new Bubble("Bubble", BubbleTex, new Vector2D(this.center.x + 50, this.center.y))
+                const bubble = new Bubble("Bubble", BubbleTex, new Vector2D(this.center.x + 40, this.center.y))
                 Game.add(bubble);
             }
         }
         else if(this.tag === "Player2")
         {
-            if (e.key === 'ArrowUp'  )    {this.setMove(true); this.setVelocity(UP);}
+            if (e.key === 'ArrowUp'  )   {this.setMove(true); this.setVelocity(UP);}
             if (e.key === 'ArrowDown' )  {this.setMove(true); this.setVelocity(DOWN);}
-            if (e.key === 'ArrowLeft')  {this.setAcceleration(2);}
-            if (e.key === 'ArrowRight') {
-                const bubble = new Bubble("Bubble", BubbleTex, new Vector2D(this.center.x - 50, this.center.y), new Vector2D(-5,0))
+            if (e.key === 'ArrowLeft')   {this.setAcceleration(2);}
+            if (e.key === 'ArrowRight')  {
+                const bubble = new Bubble("Bubble", BubbleTex, new Vector2D(this.center.x - 40, this.center.y), new Vector2D(-5,0))
                 Game.add(bubble);
             }
         }

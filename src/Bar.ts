@@ -2,7 +2,6 @@ import * as PIXI from 'pixi.js';
 import { GameObject } from './GameObject';
 import { BarPolygon } from './Polygon';
 import { Vector2D } from './Vector';
-import { objType } from './Collider';
 
 const BAR_VELOCITY = 7;
 
