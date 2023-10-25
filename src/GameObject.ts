@@ -75,6 +75,14 @@ export abstract class GameObject {
         return this.scale;
     }
 
+    get getHeight(): number {
+        return this.height;
+    }
+
+    get getWidth(): number {
+        return this.width;
+    }
+
     abstract update(delta: number): void;
     abstract updatePolygon(center: { x: number; y: number }): void;
     onCollide?(target: GameObject, line: { start: Vector2D; end: Vector2D }): void;

@@ -1,6 +1,6 @@
 import * as PIXI from 'pixi.js';
 import { Vector2D } from './Vector';
-import { Ball } from './Ball';
+import { Line } from './types';
 
 export abstract class Polygon {
     protected points: number[];
@@ -8,7 +8,6 @@ export abstract class Polygon {
     protected center: Vector2D;
     protected width: number;
     protected height: number;
-
 
     constructor(protected polygon: PIXI.Polygon) {
         this.vertices = 0;
@@ -25,18 +24,14 @@ export abstract class Polygon {
 
         for (let i = 0, j = length - 1; i < length; j = i++)
         {
-            const xi = this.points[i * 2];
-            const yi = this.points[(i * 2) + 1];
-            const xj = this.points[j * 2];
-            const yj = this.points[(j * 2) + 1];
+            const xi = this.points[i * 2]; const yi = this.points[(i * 2) + 1];
+            const xj = this.points[j * 2]; const yj = this.points[(j * 2) + 1];
             const intersect = ((yi > y) !== (yj > y)) && (x < ((xj - xi) * ((y - yi) / (yj - yi))) + xi);
-
             if (intersect)
             {
                 inside = !inside;
             }
         }
-
         return inside;
     }
 
@@ -65,6 +60,20 @@ export abstract class Polygon {
         
         return vertices;
     }
+
+    public getClosestPoint(point: Vector2D): Vector2D {
+        let closestVertice = this.getVertice(0);
+        let closestDistance = point.distance(closestVertice);
+        for (let i = 1; i < this.vertices; i++) {
+            const vertice = this.getVertice(i);
+            const distance = point.distance(vertice);
+            if (distance < closestDistance) {
+                closestVertice = vertice;
+                closestDistance = distance;
+            }
+        }
+        return closestVertice;
+    }
     
     getAreas(point: Vector2D): { area: number; points: [Vector2D, Vector2D] }[] {
         const vertices = this.points.length / 2;
@@ -83,7 +92,7 @@ export abstract class Polygon {
     }
 
 
-    private areLinesIntersecting(line1: {start: Vector2D, end: Vector2D}, line2: {start: Vector2D, end: Vector2D}): boolean {
+    static areLinesIntersecting(line1: Line, line2: Line): false | Vector2D {
         const dir1 =line1.end.subtract(line1.start);
         const dir2 =line2.end.subtract(line2.start);
     
@@ -101,21 +110,21 @@ export abstract class Polygon {
         const t1 = (p.x * dir2.y - p.y * dir2.x) / determinant;
         const t2 = (p.x * dir1.y - p.y * dir1.x) / determinant;
     
-        return t1 >= 0 && t1 <= 1 && t2 >= 0 && t2 <= 1;
+        if (t1 >= 0 && t1 <= 1 && t2 >= 0 && t2 <= 1)
+            return new Vector2D(line1.start.x + dir1.x * t1, line1.start.y + dir1.y * t1);
+        return false;
     }
     
 
-    collides(polygon: Polygon): {obj: {start: Vector2D, end: Vector2D}, target: {start: Vector2D, end: Vector2D}} | undefined
+    collides(polygon: Polygon): {obj: Line, target: Line, intersection: Vector2D} | undefined
     {
-
-        const lines_1:  {start: Vector2D, end: Vector2D}[] = [];
-        const lines_2:  {start: Vector2D, end: Vector2D}[] = [];
+        const lines_1: Line[] = [];
+        const lines_2: Line[] = [];
 
         for (let i = 0; i < (this.points.length - 2); i+=2)
         {
             lines_1.push({start: new Vector2D(this.points[i], this.points[i + 1]), end: new Vector2D(this.points[i + 2], this.points[i + 3])});
-        }
-        
+        }   
         lines_1.push({start: lines_1[lines_1.length - 1].end, end: new Vector2D(this.points[0], this.points[1])});
 
 
@@ -123,21 +132,16 @@ export abstract class Polygon {
         {
             lines_2.push({start: new Vector2D(polygon.points[i], polygon.points[i + 1]), end: new Vector2D(polygon.points[i + 2], polygon.points[i + 3])});
         }
-        
         lines_2.push({start: lines_2[lines_2.length - 1].end, end: new Vector2D(polygon.points[0], polygon.points[1])});
       
-     
-        
-         for (const line of  lines_1)
-         {
-    
+
+        for (const line of  lines_1)
+        {
             for (const line2 of  lines_2)
             {
-                if (this.areLinesIntersecting(line, line2))
-                    return {
-                        obj: line,
-                        target: line2
-                    };
+                const b = Polygon.areLinesIntersecting(line, line2);
+                if (b)
+                    return ({ obj: line, target: line2 , intersection: b});
             }
         }
 
@@ -146,7 +150,7 @@ export abstract class Polygon {
 }
 
 function createBall( points: number[], vertices: number, radius: number, center: Vector2D ): number[] {
-    points.length = 0; // Clear the previous points
+    points.length = 0;
 
     for (let i = 0; i < vertices; i++) {
         const angle = (i / vertices) * Math.PI * 2;
@@ -185,15 +189,13 @@ function createBar( direction: Vector2D, width: number, height: number, center: 
     const points: number[] = [];
 
     const topLeft: Vector2D = new Vector2D( center.x + (width / 2) * direction.x, center.y - (height / 2) * direction.y );
-    const bottomLeft: Vector2D = new Vector2D( center.x + (width / 2) * direction.x, center.y + (height / 2) * direction.y );
     const topRight: Vector2D = new Vector2D( center.x - (width / 2) * direction.x, center.y - (height / 2) * direction.y );
     const bottomRight: Vector2D = new Vector2D( center.x - (width / 2) * direction.x, center.y + (height / 2) * direction.y );
-    const middleOut: Vector2D = new Vector2D( center.x - width * direction.x, center.y);
+    const bottomLeft: Vector2D = new Vector2D( center.x + (width / 2) * direction.x, center.y + (height / 2) * direction.y );
     points.push(topLeft.x, topLeft.y);
     points.push(topRight.x, topRight.y);
-    points.push(middleOut.x, middleOut.y);
     points.push(bottomRight.x, bottomRight.y);
-    points.push(bottomLeft.x, bottomLeft.y);
+    points.push(bottomLeft.x, bottomLeft.y);    
 
     return points;
 }
@@ -206,7 +208,7 @@ export class BarPolygon extends Polygon {
         const barPolygon = new PIXI.Polygon(points);
         super(barPolygon);
 
-        this.vertices = 3;
+        this.vertices = 4;
         this.center = center;
         this.points = points;
         this.width = width;

@@ -1,11 +1,9 @@
 import * as PIXI from 'pixi.js';
-import { Bar } from './Bar';
 import { Ball } from './Ball';
 import { GameObject } from './GameObject';
 import { Vector2D } from './Vector';
 import { ArenaWall } from './Arena';
 import { Debug } from './Debug';
-import { Bubble } from './Bubble';
 
 import { drawLines } from './drawUtils';
 import { Collider } from './Collider';
@@ -35,10 +33,10 @@ export class Game {
     private debug: Debug;
     private scoreElement: PIXI.Text;
     private scoreStyle: PIXI.TextStyle;
-    public isUpdade = true;
+    public runGame = true;
     public isDebug = false;
 
-    private gameObjects: GameObject[] = [];
+    public gameObjects: GameObject[] = [];
     private remove_gameObjects: GameObject[] = [];
     private collider_gameObjects: GameObject[] = [];
     private keydown_gameObjects: GameObject[] = [];
@@ -58,6 +56,7 @@ export class Game {
         });
 
         this.app.renderer.background.color = DEFAULT_FIELD_COLOR;
+        drawLines(DEFAULT_LINE_COLOR, this.app);
 
         const p1 = new Player(P1Tex, P_START_DIST, this.app.view.height / 2, 'Player1', new Vector2D(1, 1));
         Game.add(p1);
@@ -75,7 +74,6 @@ export class Game {
         Game.add(new ArenaWall(new Vector2D(this.app.view.width / 2, -25), new Vector2D(this.app.view.width, 55)));
         Game.add(new ArenaWall(new Vector2D(this.app.view.width / 2, this.app.view.height + 10),new Vector2D(this.app.view.width, 25)));
 
-        drawLines(DEFAULT_LINE_COLOR, this.app);
 
         // true or false?
         // this.blueTranform.hue(120, false);
@@ -84,7 +82,6 @@ export class Game {
         // this.app.stage.filters = [this.backgroundHue];
 
         document.body.appendChild(this.app.view as HTMLCanvasElement);
-        // this.players.forEach(player => this.app.stage.addChild(player.getDisplayObject));
 
         this.scoreStyle = new PIXI.TextStyle({
             fontFamily: 'arial',
@@ -117,10 +114,9 @@ export class Game {
             }
         });
         if (e.key === 't') {
-            this.isUpdade = !this.isUpdade;
-            
+            Game.getObjectByTag('Bolinha')?.setMove(!this.runGame);
+            this.runGame = !this.runGame;   
         }
-
         if (e.key === 'p')
             this.isDebug = !this.isDebug;
     };
@@ -131,41 +127,30 @@ export class Game {
     };
 
     start() {
-        this.app.ticker.minFPS = 120;
+        this.app.ticker.maxFPS = 120;
         this.app.ticker.add((delta) => {
-            if (this.isUpdade) {
+            //if (this.runGame) {
                 this.gameObjects.forEach((gameObject: GameObject) => gameObject.collider.reset());
-                // gameObjects.forEach(ob => {
-                //     if (Collider.collides_ob(ob, ball, this.debugGraphics))
-                //     {
-                //         ball.setMove(false);
-                //     }
-                // });
+                
+                this.scoreElement.text = `${score[0]}     ${score[1]}`;
+                this.backgroundHue.hue(hue_value, false);      
+
                 //hue_value += 1;
                 this.collider_gameObjects.forEach((target: GameObject) => {
                     this.gameObjects.forEach((gameObject: GameObject) => {
-                        if (target != gameObject) Collider.collides_ob(gameObject, target);
+                        if (target != gameObject) Collider.collidingObjects(gameObject, target);
                     });
                 });
 
                 this.gameObjects.forEach((gameObject: GameObject) => {
                     gameObject.update(delta);
                 });
-
-    
-                if (this.remove_gameObjects.length > 0)
-                    this.removeObjects();
-                this.backgroundHue.hue(hue_value, false);
+                
+                if (this.remove_gameObjects.length > 0) this.removeObjects();
+            
                 this.debug.clear();
-                //console.log(this.allObjects);
-                // this.players.forEach(player => player.update(delta, this.app.view.height));
-                this.scoreElement.text = `${score[0]}     ${score[1]}`;
-                // this.gameBall.update(delta, this.app.view.height, this.app.view.width, this.allObjects)
-                // this.specialPower.update(delta, this.app.view.height, this.app.view.width, this.allObjects);
-                // this.allObjects.forEach(obj => obj instanceof Bubble && obj.update(delta, this.app.view.height, this.app.view.width, this.allObjects));
-                if (this.isDebug)
-                    this.debug.debugDraw(this.gameObjects);
-            }
+                if (this.isDebug) this.debug.debugDraw(this.gameObjects);
+            //}
         });
     }
 
@@ -182,27 +167,20 @@ export class Game {
     }
 
     private removeObjects() {
-        console.log("gameObjects: ", this.gameObjects.length);
 
-
-        // for (const gameObject of this.remove_gameObjects) {
-   
-            this.collider_gameObjects = this.collider_gameObjects.filter((value: GameObject) => !this.remove_gameObjects.includes(value)) 
-            this.keydown_gameObjects = this.keydown_gameObjects.filter((value: GameObject) => !this.remove_gameObjects.includes(value)) 
-            this.keyup_gameObjects = this.keyup_gameObjects.filter((value: GameObject) => !this.remove_gameObjects.includes(value)) 
-            this.gameObjects = this.gameObjects.filter((value: GameObject) => !this.remove_gameObjects.includes(value)) 
-            //(this.collider_gameObjects.indexOf(gameObject), 1);
-            // if (gameObject?.onKeyDown != undefined)
-            //     this.keydown_gameObjects.splice(this.keydown_gameObjects.indexOf(gameObject), 1);
-            // if (gameObject?.onKeyUp != undefined)
-            //     this.keyup_gameObjects.splice(this.keyup_gameObjects.indexOf(gameObject), 1);
-            // this.gameObjects.splice(this.gameObjects.indexOf(gameObject), 1);
-            //
-        // }
+        this.collider_gameObjects = this.collider_gameObjects.filter((value: GameObject) => !this.remove_gameObjects.includes(value)) 
+        this.keydown_gameObjects = this.keydown_gameObjects.filter((value: GameObject) => !this.remove_gameObjects.includes(value)) 
+        this.keyup_gameObjects = this.keyup_gameObjects.filter((value: GameObject) => !this.remove_gameObjects.includes(value)) 
+        this.gameObjects = this.gameObjects.filter((value: GameObject) => !this.remove_gameObjects.includes(value)) 
+        
         this.app.stage.removeChild(...this.remove_gameObjects.map(e => e.getDisplayObject));
         this.remove_gameObjects.length = 0;
-        console.log("remove_gameObjects: ", this.gameObjects.length);
+    }
 
+    static applyOnAllObjects(func: (gameObject: GameObject) => void) {
+        Game.instance.gameObjects.forEach((gameObject: GameObject) => {
+            func(gameObject);
+        });
     }
 
     static get width(){
@@ -212,8 +190,14 @@ export class Game {
     static get height(){
         return   Game.instance.app.view.height
     }
+    
+    static get app(){
+        return   Game.instance.app
+    }
 
-
+    static getObjectByTag(tag: string): GameObject | undefined {
+        return Game.instance.gameObjects.find((gameObject: GameObject) => gameObject.tag === tag);
+    }
 }
 
 const P1Tex = await PIXI.Texture.fromURL('assets/RedBar2.png');

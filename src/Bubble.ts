@@ -46,7 +46,6 @@ export class Bubble extends GameObject {
 
         if (!(target instanceof Bubble))
         {
-            console.log(target)
             Game.remove(this);
         }
     }

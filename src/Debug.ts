@@ -1,8 +1,5 @@
 import * as PIXI from 'pixi.js';
 import { GameObject } from './GameObject';
-import { Ball } from './Ball';
-import { Collider } from './Collider';
-import { Game } from './main';
 
 export class Debug {
     private debugGraphics: PIXI.Graphics;
@@ -47,7 +44,6 @@ export class Debug {
             if (i % 2 === 0) {
                 this.debugGraphics.beginFill(0xffff00);
                 this.debugGraphics.drawCircle(point, printPoints.getPoints[i + 1], 2);
-
                 this.debugGraphics.endFill();
             }
         });
@@ -57,12 +53,11 @@ export class Debug {
         this.debugGraphics.drawCircle(obj.collider.center.x, obj.collider.center.y, 2);
         this.debugGraphics.endFill();
 
-
+        // Draw collision line
         const line = obj.collider.line;
         if (line)
         {
             const graphics = new PIXI.Graphics();
-            console.log(line)
             graphics.beginFill(0xFF0000);
             graphics.lineStyle(2, 0xFF0000, 1);
             graphics.moveTo(line?.end.x, line?.end.y);
