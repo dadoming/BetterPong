@@ -2,10 +2,13 @@ import * as PIXI from 'pixi.js';
 import { GameObject } from './GameObject';
 import { BarPolygon } from './Polygon';
 import { Vector2D } from './Vector';
+import { Mana } from './Mana';
 
 const BAR_VELOCITY = 7;
 
 export class Bar extends GameObject {
+
+    protected mana: Mana;
 
     constructor(texture: PIXI.Texture, x: number, y: number, tag: string, public direction: Vector2D) {
         const sprite = PIXI.Sprite.from(texture);
@@ -24,6 +27,7 @@ export class Bar extends GameObject {
         this.width = this.displayObject.width;
         this.collider.polygon = new BarPolygon(this.center, this.displayObject.width, this.displayObject.height, this.direction);
         this.collider.updateBoundingBox();
+        this.mana = new Mana(this.tag);
     }
 
     setScaleDisplayObject(scale: number): void {
@@ -52,6 +56,7 @@ export class Bar extends GameObject {
             this.displayObject.y += this.move ? (this.velocity.y * this.acceleration * delta) : 0 ;
             this.setCenter(new Vector2D(this.displayObject.x, this.displayObject.y));
         }
+        this.mana.update(this.tag);
     }
 
     checkArenaCollision(): boolean {

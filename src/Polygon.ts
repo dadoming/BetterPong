@@ -17,24 +17,6 @@ export abstract class Polygon {
         this.height = 0;
     }
 
-    myContains(x: number, y: number): boolean {
-        let inside = false;
-
-        const length = this.points.length / 2;
-
-        for (let i = 0, j = length - 1; i < length; j = i++)
-        {
-            const xi = this.points[i * 2]; const yi = this.points[(i * 2) + 1];
-            const xj = this.points[j * 2]; const yj = this.points[(j * 2) + 1];
-            const intersect = ((yi > y) !== (yj > y)) && (x < ((xj - xi) * ((y - yi) / (yj - yi))) + xi);
-            if (intersect)
-            {
-                inside = !inside;
-            }
-        }
-        return inside;
-    }
-
     get getPolygon() { return this.polygon; }
     get getPoints() { return this.points; }
     get getVertices() { return this.vertices; }
@@ -60,37 +42,6 @@ export abstract class Polygon {
         
         return vertices;
     }
-
-    public getClosestPoint(point: Vector2D): Vector2D {
-        let closestVertice = this.getVertice(0);
-        let closestDistance = point.distance(closestVertice);
-        for (let i = 1; i < this.vertices; i++) {
-            const vertice = this.getVertice(i);
-            const distance = point.distance(vertice);
-            if (distance < closestDistance) {
-                closestVertice = vertice;
-                closestDistance = distance;
-            }
-        }
-        return closestVertice;
-    }
-    
-    getAreas(point: Vector2D): { area: number; points: [Vector2D, Vector2D] }[] {
-        const vertices = this.points.length / 2;
-        const areas = new Array<{ area: number; points: [Vector2D, Vector2D] }>(vertices);
-
-        for (let i = 0; i < vertices; i++) {
-            const triangle = [point, this.getVertice(i)];
-            if (i == vertices - 1) triangle.push(this.getVertice(0));
-            else triangle.push(this.getVertice(i + 1));
-            
-            const [A, B, C] = triangle;
-            const area = Math.abs((A.x * (B.y - C.y) + B.x * (C.y - A.y) + C.x * (A.y - B.y)) / 2);
-            areas[i] = { area, points: [triangle[1], triangle[2]] };
-        }
-        return areas;
-    }
-
 
     static areLinesIntersecting(line1: Line, line2: Line): false | Vector2D {
         const dir1 =line1.end.subtract(line1.start);
@@ -222,38 +173,3 @@ export class BarPolygon extends Polygon {
     }
 }
 
-const createArena = ( width: number, height: number, position: Vector2D): number[] => {
-    const points: number[] = [];
-
-    const topLeft: Vector2D = new Vector2D( position.x - width / 2, position.y - height / 2 );
-    const topRight: Vector2D = new Vector2D( position.x + width / 2, position.y - height / 2 );
-    const bottomRight: Vector2D = new Vector2D( position.x + width / 2, position.y + height / 2 );
-    const bottomLeft: Vector2D = new Vector2D( position.x - width / 2, position.y + height / 2 );
-
-    points.push(topLeft.x, topLeft.y);
-    points.push(topRight.x, topRight.y);
-    points.push(bottomRight.x, bottomRight.y);
-    points.push(bottomLeft.x, bottomLeft.y);
-
-    return points;
-}
-
-export class ArenaPolygon extends Polygon {
-    constructor( center: Vector2D, width: number, height: number) {
-        const points = createArena(width, height, center);
-        const arenaPolygon = new PIXI.Polygon(points);
-        super(arenaPolygon);
-
-        this.vertices = 4;
-        this.center = center;
-        this.points = points;
-        this.width = width;
-        this.height = height;
-    }
-
-    update(center: Vector2D) {
-        this.center = center;
-        this.points = createArena( this.width, this.height, center);
-        this.getPolygon.points = this.points;
-    }
-}

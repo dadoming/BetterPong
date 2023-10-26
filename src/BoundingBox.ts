@@ -41,18 +41,24 @@ export class BoundingBox {
 
     static fromPolygon(polygon: Polygon): BoundingBox {
         const vertices = polygon.vertices2D;
-        
-        const left = Math.min(...vertices.map((v) => v.x));
-        const right = Math.max(...vertices.map((v) => v.x));
-        const top = Math.min(...vertices.map((v) => v.y));
-        const bottom = Math.max(...vertices.map((v) => v.y));
 
-        if ( left === Infinity || right === -Infinity || top === Infinity || bottom === -Infinity )
-            return new BoundingBox();
-        if ( isNaN(left) || isNaN(right) || isNaN(top) || isNaN(bottom) ||
-            left === undefined || right === undefined || top === undefined || bottom === undefined )
+        if (vertices.length === 0)
             return new BoundingBox();
         
-            return new BoundingBox( new Vector2D(left, top), new Vector2D(right - left, bottom - top) );
+        const boundingBox = vertices.reduce((bbox, vertex) => {
+            return {
+                left: Math.min(bbox.left, vertex.x),
+                right: Math.max(bbox.right, vertex.x),
+                top: Math.min(bbox.top, vertex.y),
+                bottom: Math.max(bbox.bottom, vertex.y),
+            };
+        }, {
+            left: vertices[0].x,
+            right: vertices[0].x,
+            top: vertices[0].y,
+            bottom: vertices[0].y,
+        });
+        
+        return new BoundingBox( new Vector2D(boundingBox.left, boundingBox.top), new Vector2D(boundingBox.right - boundingBox.left, boundingBox.bottom - boundingBox.top) );
     }
 }

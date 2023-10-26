@@ -28,10 +28,34 @@ export class Collider {
 
     updateBoundingBox(): void {
         const newBoundingBox = BoundingBox.fromPolygon(this.polygon);
-
+    
+        this.boundingBox.position = newBoundingBox.position;
+        this.boundingBox.size = newBoundingBox.size;
+    
+        const vertices = this.polygon.vertices2D;
+        let sum = new Vector2D(0, 0);
+    
+        for (const vertex of vertices) {
+            sum = sum.add(vertex);
+        }
+    
+        this.center = sum.divide(vertices.length);
+    }
+    /*
+    
+    updateBoundingBox(): void {
+        const newBoundingBox = BoundingBox.fromPolygon(this.polygon);
+        
+        console.log(newBoundingBox);
+        
         this.boundingBox.position = newBoundingBox.position;
         this.boundingBox.size = newBoundingBox.size;
         this.center = this.polygon.vertices2D.reduce((a, b) => a.add(b), Vector2D.Zero).divide(this.polygon.vertices2D.length);
+    }
+    */
+
+    static fromPolygon(polygon: Polygon): Collider {
+        return new Collider(BoundingBox.fromPolygon(polygon), polygon);
     }
 
     // problem when handling multiple collisions 
@@ -77,7 +101,4 @@ export class Collider {
         this.intersection = undefined;
     }
 
-    static fromPolygon(polygon: Polygon): Collider {
-        return new Collider(BoundingBox.fromPolygon(polygon), polygon);
-    }
 }

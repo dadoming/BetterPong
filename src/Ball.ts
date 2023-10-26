@@ -3,12 +3,13 @@ import { GameObject } from './GameObject';
 import { BallPolygon } from './Polygon';
 import { Vector2D } from './Vector';
 import { Bar } from './Bar';
-import { Game, score } from './main';
+import { score } from './main';
+import { Game } from "./Game";
 import { Bubble } from './Bubble';
 import { Line } from './types';
 import { ArenaWall } from './Arena';
 
-export const BALL_VERTICES = 10;
+export const BALL_VERTICES = 8;
 
 export class Ball extends GameObject {
     constructor(x: number, y: number, texture: PIXI.Texture) {
@@ -72,6 +73,12 @@ export class Ball extends GameObject {
         if (this.center.x <= 0 || this.center.x >= Game.width) {
             this.resetBall(this.center.x);
         }
+        if (this.center.y - this.height/2 <= 0) {
+            this.center.add(new Vector2D(0, 1));
+        }
+        if (this.center.y + this.height/2 >= Game.height) {
+            this.center.add(new Vector2D(0, -1));
+        }
         this.setCenter(
             new Vector2D(
                 this.center.x + (this.move ? this.velocity.x * this.acceleration * delta : 0),
@@ -81,12 +88,13 @@ export class Ball extends GameObject {
     }
 
     onCollide(target: GameObject, line: Line): void {
+        
+    
         if (target instanceof ArenaWall)
         {
-            this.velocity.y = -this.velocity.y;        
+            this.velocity.y = -this.velocity.y;     
         }
         else if (target instanceof Bar || target instanceof Bubble) {
-            console.log(target);
             // where the ball hit
             let collidePoint = this.getCenter.y - (target.getCenter.y);
     
@@ -107,7 +115,8 @@ export class Ball extends GameObject {
             this.getVelocity.y = currentSpeed * -Math.sin(angleRad);
                 
             // Increase the ball speed
-            this.setAcceleration(this.getAcceleration + 0.15);
+            if (this.acceleration < 2)
+                this.setAcceleration(this.getAcceleration + 0.15);
             if (this.center.y <= target.getCenter.y - (target.getHeight / 2) || this.center.y >= target.getCenter.y + (target.getHeight / 2))
             {
                 this.setVelocity(new Vector2D(-this.getVelocity.x, -this.getVelocity.y));
@@ -115,4 +124,47 @@ export class Ball extends GameObject {
             }
         }
     }
+
+    // still has a mini bug when the ball collides with the back of the bar
+    //onCollide(target: GameObject, line: Line): void {
+    //    if (target instanceof ArenaWall) {
+    //        // Handle collision with ArenaWall as before
+    //        this.velocity.y = -this.velocity.y;
+    //    } else if (target instanceof Bar || target instanceof Bubble) {
+    //        // Handle collision with Bar or Bubble
+    //        
+    //        // Calculate the point of collision relative to the center of the target
+    //        const collidePoint = this.getCenter.y - target.getCenter.y;
+    //        
+    //        // Normalize the value
+    //        const normalizedCollidePoint = collidePoint / (target.getHeight / 2);
+    //        
+    //        // Calculate the angle in Radians
+    //        const angleRad = normalizedCollidePoint * (Math.PI / 4);
+    //        
+    //        // Determine the direction based on the current X velocity
+    //        const direction = this.getVelocity.x > 0 ? -1 : 1;
+    //        
+    //        // Store the current speed (magnitude of velocity)
+    //        const currentSpeed = Math.sqrt(this.getVelocity.x ** 2 + this.getVelocity.y ** 2);
+    //        
+    //        // Change the X and Y velocity direction
+    //        this.getVelocity.x = currentSpeed * Math.cos(angleRad) * direction;
+    //        this.getVelocity.y = currentSpeed * -Math.sin(angleRad);
+    //        
+    //        // Increase the ball speed
+    //        this.setAcceleration(this.getAcceleration + 0.15);
+    //        
+    //        // Check if the ball hit the back of the paddle (use an appropriate threshold)
+    //        if (Math.abs(normalizedCollidePoint) > 0.8) {
+    //            // Reverse the X velocity to move the ball backward
+    //            this.getVelocity.x = -this.getVelocity.x;
+    //        }
+    //        if (this.center.y <= target.getCenter.y - (target.getHeight / 2) || this.center.y >= target.getCenter.y + (target.getHeight / 2))
+    //        {
+    //            this.setVelocity(new Vector2D(-this.getVelocity.x, -this.getVelocity.y));
+    //            return;
+    //        }
+    //    }
+    //}
 }

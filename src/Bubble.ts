@@ -2,8 +2,9 @@ import * as PIXI from "pixi.js";
 import { GameObject } from "./GameObject";
 import { Vector2D } from "./Vector";
 import { BallPolygon } from "./Polygon";
-import { Game } from "./main";
+import { Game } from "./Game";
 import { BALL_VERTICES } from "./Ball";
+import { Line } from "./types";
 
 
 export class Bubble extends GameObject {
@@ -42,7 +43,7 @@ export class Bubble extends GameObject {
          }
     }
 
-    onCollide(target: GameObject, line: { start: Vector2D; end: Vector2D; }): void {
+    onCollide(target: GameObject, line: Line): void {
 
         if (!(target instanceof Bubble))
         {
