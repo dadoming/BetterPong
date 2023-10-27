@@ -5,7 +5,7 @@ import { Vector2D } from './Vector';
 
 export class Collider {
     public center: Vector2D = Vector2D.Zero;
-    public lastCollision: Collider | undefined;
+    public lastCollision: Collider | undefined | false;
     public isCollider: boolean = false;
     public target: GameObject | undefined;
     public line: { start: Vector2D, end: Vector2D} | undefined = undefined;
@@ -58,7 +58,45 @@ export class Collider {
         return new Collider(BoundingBox.fromPolygon(polygon), polygon);
     }
 
-    // problem when handling multiple collisions 
+    //// problem when handling multiple collisions 
+    //public static collidingObjects(ob1: GameObject, ob2: GameObject): boolean
+    //{
+    //    if (ob1.collider.boundingBox.collides(ob2.collider.boundingBox))
+    //    {
+    //        const co = ob1.getPolygon.collides(ob2.getPolygon);
+    //        if (co != undefined) 
+    //        {
+    //            ob1.collider.isCollider = true;
+    //            ob2.collider.isCollider = true;
+//
+    //            ob1.collider.line = co.obj;
+    //            ob2.collider.line = co.target;
+//
+    //            ob1.collider.target = ob2;
+    //            ob2.collider.target = ob1;
+//
+    //            ob1.collider.intersection = co.intersection;
+    //            ob2.collider.intersection = co.intersection;
+    //            if (ob1.collider.lastCollision === ob2.collider && 
+    //                ob2.collider.lastCollision === ob1.collider)
+    //            {
+//
+    //                console.log(ob1,  ob2);
+    //                return (false);
+    //            }
+    //            ob1.collider.lastCollision = ob2.collider;
+    //            ob2.collider.lastCollision = ob1.collider;
+    //            if (ob1?.onCollide)
+    //                ob1.onCollide(ob2, co.target);
+    //            if (ob2?.onCollide)
+    //                ob2.onCollide(ob1, co.obj);
+    //            return (true);
+    //        }
+    //    }
+    //    return (false);
+    //}
+//
+
     public static collidingObjects(ob1: GameObject, ob2: GameObject): boolean
     {
         if (ob1.collider.boundingBox.collides(ob2.collider.boundingBox))
@@ -77,13 +115,13 @@ export class Collider {
 
                 ob1.collider.intersection = co.intersection;
                 ob2.collider.intersection = co.intersection;
-                if (ob1.collider.lastCollision === ob2.collider && 
-                    ob2.collider.lastCollision === ob1.collider)
+                
+                if ((ob1.collider?.lastCollision === ob2.collider) || (ob2.collider?.lastCollision === ob1.collider))
                 {
-                    return (false);
+                    console.log(ob1, ob2);
+                    return false
                 }
-                ob1.collider.lastCollision = ob2.collider;
-                ob2.collider.lastCollision = ob1.collider;
+                
                 if (ob1?.onCollide)
                     ob1.onCollide(ob2, co.target);
                 if (ob2?.onCollide)
@@ -95,7 +133,7 @@ export class Collider {
     }
 
     public reset(){
-        this.target = undefined;
+        //this.target = undefined;
         this.line = undefined;
         this.isCollider = false;
         this.intersection = undefined;

@@ -3,6 +3,7 @@ import { GameObject } from './GameObject';
 import { BarPolygon } from './Polygon';
 import { Vector2D } from './Vector';
 import { Mana } from './Mana';
+import { Collider } from './Collider';
 
 const BAR_VELOCITY = 7;
 
@@ -20,7 +21,7 @@ export class Bar extends GameObject {
         this._move = false;
         this.acceleration = 1;
         this.center = new Vector2D(x, y);
-        this.velocity = new Vector2D(0, BAR_VELOCITY).normalize().multiply(6);
+        this.velocity = new Vector2D(0, BAR_VELOCITY);
         this.direction = direction;
         this.scale = 1;
         this.height = this.displayObject.height;
@@ -62,9 +63,9 @@ export class Bar extends GameObject {
     checkArenaCollision(): boolean {
         if (this.collider.line && this.collider.intersection)
         {
-            if (this.collider.intersection.y < this.getCenter.y && this.velocity.y < 0)
+            if (this.collider.intersection.y < this.getCenter.y &&  this.velocity.y < 0)
                 return false;
-            if (this.collider.intersection.y > this.getCenter.y && this.velocity.y > 0)
+            if (this.collider.intersection.y > this.getCenter.y &&  this.velocity.y > 0)
                 return false;
         }
         return true;

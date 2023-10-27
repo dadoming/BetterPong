@@ -1,4 +1,5 @@
 import * as PIXI from 'pixi.js';
+import {Sprite, Container} from 'pixi.js';
 import { Game } from './Game';
 
 export const WINDOW_WIDTH = window.innerWidth * 0.8;
@@ -28,4 +29,5 @@ export const BallTex = await PIXI.Texture.fromURL('assets/Ball.png');
 export const BubbleTex = await PIXI.Texture.fromURL('assets/bubble_3.png');
 
 const game = new Game();
+
 game.start();

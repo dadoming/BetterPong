@@ -32,6 +32,7 @@ export class Ball extends GameObject {
         const blueTranform = new PIXI.ColorMatrixFilter();
         blueTranform.hue(60, false);
         this.getDisplayObject.filters = [blueTranform];
+        this.collider.lastCollision = undefined
     }
 
     getRandomVelocity(): Vector2D {
@@ -43,7 +44,7 @@ export class Ball extends GameObject {
 
     startBall(): void {
         this.setCenter(new Vector2D(Game.width / 2, Game.height / 2));
-        Game.applyOnAllObjects((obj) => obj.collider.lastCollision = undefined);
+            Game.applyOnAllObjects((obj) => obj.collider.lastCollision !== false ? obj.collider.lastCollision = undefined : false);
         this.velocity = new Vector2D(7.5, -5.5).normalize().multiply(4);
         this.velocity = this.getRandomVelocity();
         this.acceleration = 1;
@@ -88,7 +89,7 @@ export class Ball extends GameObject {
     }
 
     onCollide(target: GameObject, line: Line): void {
-        
+        this.collider.lastCollision = target.collider;
     
         if (target instanceof ArenaWall)
         {

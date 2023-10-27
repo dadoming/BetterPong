@@ -24,6 +24,7 @@ export class Bubble extends GameObject {
         this.width = this.displayObject.width;
         this.collider.polygon = new BallPolygon(this.center, this.width, BALL_VERTICES, []);
         this.collider.updateBoundingBox();
+        this.collider.lastCollision = undefined;
     }
 
     updatePolygon(center: Vector2D): void {

@@ -48,8 +48,9 @@ export class Game {
         this.blueTranform.hue(240, false);
         p1.getDisplayObject.filters = [this.blueTranform];
         Game.add(p1);
-        //Game.add( new Player(P2Tex, this.app.view.width - P_START_DIST, this.app.view.height / 2, 'Player2', new Vector2D(-1, 1)));
-        Game.add(new Bot(P2Tex, this.app.view.width - P_START_DIST, this.app.view.height / 2, 'Player2', new Vector2D(-1, 1)));
+        
+        Game.add( new Player(P2Tex, this.app.view.width - P_START_DIST, this.app.view.height / 2, 'Player2', new Vector2D(-1, 1)));
+        //Game.add(new Bot(P2Tex, this.app.view.width - P_START_DIST, this.app.view.height / 2, 'Player2', new Vector2D(-1, 1)));
         //Game.add(new Bot(P2Tex, MULTIPLAYER_START_POS, this.app.view.height / 2, 'Player3', new Vector2D(-1, 1)));
         //Game.add(new Bot(P2Tex, this.app.view.width - MULTIPLAYER_START_POS, this.app.view.height / 2, 'Player4', new Vector2D(-1, 1)));
         Game.add(new ArenaWall(new Vector2D(0, 0), new Vector2D(this.app.view.width, ARENA_SIZE), "00ABFF"));
@@ -109,10 +110,17 @@ export class Game {
     };
 
     start() {
-        this.app.ticker.minFPS = 60;
-        this.app.ticker.maxFPS = 60;
+        this.app.ticker.minFPS = 30;
+        this.app.ticker.maxFPS = 120;
+        const text = new PIXI.Text(this.app.ticker.FPS, { fill: 'white' });
+        text.x = 200;
+        text.y = 10;
+        this.app.stage.addChild(text);
         this.app.ticker.add((delta) => {
             if (this.runGame) {
+
+                text.text = Math.round(this.app.ticker.FPS).toString();
+                        
                 this.gameObjects.forEach((gameObject: GameObject) => gameObject.collider.reset());
                 
                 this.scoreElement.text = `${score[0]}     ${score[1]}`;

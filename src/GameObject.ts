@@ -24,6 +24,7 @@ export abstract class GameObject {
         this.height = 0;
         this.width = 0;
         this.collider = Collider.fromPolygon(new BallPolygon(this.center, 0, 0, []));
+        this.collider.lastCollision = false;
     }
 
     setMove(move: boolean): void {
