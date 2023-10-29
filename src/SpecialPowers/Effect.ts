@@ -1,4 +1,4 @@
-import { Bar } from "../Bar";
+import { Bar } from "../Paddles/Bar";
 import { Vector2D } from "../utils/Vector";
 
 

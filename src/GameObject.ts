@@ -1,6 +1,6 @@
 import * as PIXI from 'pixi.js';
-import { BallPolygon } from './Polygon';
-import { Collider } from './Collider';
+import { BallPolygon } from './Collisions/Polygon';
+import { Collider } from './Collisions/Collider';
 import { Vector2D } from './utils/Vector';
 
 export abstract class GameObject {

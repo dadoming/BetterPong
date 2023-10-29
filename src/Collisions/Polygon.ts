@@ -1,6 +1,6 @@
 import * as PIXI from 'pixi.js';
-import { Vector2D } from './utils/Vector';
-import { Line } from './utils/types';
+import { Vector2D } from '../utils/Vector';
+import { Line } from '../utils/types';
 
 export abstract class Polygon {
     protected points: number[];

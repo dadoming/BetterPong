@@ -1,12 +1,12 @@
 import * as PIXI from 'pixi.js';
-import { GameObject } from './GameObject';
-import { BarPolygon } from './Polygon';
-import { Vector2D } from './utils/Vector';
+import { GameObject } from '../GameObject';
+import { BarPolygon } from '../Collisions/Polygon';
+import { Vector2D } from '../utils/Vector';
 import { Mana } from './Mana';
-import { Ice } from './SpecialPowers/Ice';
-import { Bubble } from './SpecialPowers/Bubble';
+import { Ice } from '../SpecialPowers/Ice';
+import { Bubble } from '../SpecialPowers/Bubble';
 import { Energy } from './Energy';
-import { Effect } from './SpecialPowers/Effect';
+import { Effect } from '../SpecialPowers/Effect';
 
 export class Bar extends GameObject {
 

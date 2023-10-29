@@ -1,6 +1,6 @@
 import * as PIXI from 'pixi.js';
-import { Game } from './Game';
-import { Vector2D } from './utils/Vector';
+import { Game } from '../Game';
+import { Vector2D } from '../utils/Vector';
 
 export class Mana {
 

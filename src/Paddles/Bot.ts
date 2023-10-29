@@ -1,6 +1,6 @@
 import { Bar } from "./Bar";
-import { Vector2D } from "./utils/Vector";
-import { Game } from "./Game";
+import { Vector2D } from "../utils/Vector";
+import { Game } from "../Game";
 import * as PIXI from 'pixi.js';
 
 const UP    = new Vector2D(0, -5);

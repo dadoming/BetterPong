@@ -1,11 +1,11 @@
 import { GameObject } from "../GameObject";
 import { Vector2D } from "../utils/Vector";
 import * as PIXI from "pixi.js";
-import { BallPolygon } from "../Polygon";
+import { BallPolygon } from "../Collisions/Polygon";
 import { BALL_VERTICES } from "../Ball";
 import { Game } from "../Game";
 import { Line } from "../utils/types";
-import { Mana } from "../Mana";
+import { Mana } from "../Paddles/Mana";
 
 
 export abstract class SpecialPower extends GameObject {

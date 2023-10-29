@@ -2,9 +2,9 @@ import { GameObject } from "../GameObject";
 import { Vector2D } from "../utils/Vector";
 import { Game } from "../Game";
 import { IceTex } from "../main";
-import { Mana } from "../Mana";
+import { Mana } from "../Paddles/Mana";
 import { SpecialPower } from "./SpecialPower";
-import { Bar } from "../Bar";
+import { Bar } from "../Paddles/Bar";
 import { Effect } from "./Effect";
 
 export class Ice extends SpecialPower {

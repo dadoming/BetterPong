@@ -1,8 +1,8 @@
 import * as PIXI from 'pixi.js';
 import { Bar } from "./Bar";
-import { Vector2D } from "./utils/Vector";
-import { Bubble } from './SpecialPowers/Bubble';
-import { Ice } from './SpecialPowers/Ice';
+import { Vector2D } from "../utils/Vector";
+import { Bubble } from '../SpecialPowers/Bubble';
+import { Ice } from '../SpecialPowers/Ice';
 
 const UP    = new Vector2D(0, -5);
 const DOWN  = new Vector2D(0, 5);

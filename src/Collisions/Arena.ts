@@ -1,9 +1,9 @@
-import { GameObject } from './GameObject';
-import { Game } from "./Game";
+import { GameObject } from '../GameObject';
+import { Game } from "../Game";
 import { Polygon } from './Polygon';
-import { Vector2D } from './utils/Vector';
+import { Vector2D } from '../utils/Vector';
 import * as PIXI from 'pixi.js';
-import { Line } from './utils/types';
+import { Line } from '../utils/types';
 
 export class ArenaWall extends GameObject {
     constructor( public readonly position: Vector2D, public readonly size: Vector2D, private readonly color: number) {

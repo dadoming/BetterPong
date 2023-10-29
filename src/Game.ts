@@ -2,15 +2,15 @@ import * as PIXI from 'pixi.js';
 import { Ball } from './Ball';
 import { GameObject } from './GameObject';
 import { Vector2D } from './utils/Vector';
-import { ArenaWall } from './Arena';
+import { ArenaWall } from './Collisions/Arena';
 import { Debug } from './utils/Debug';
 import { drawLines } from './utils/drawUtils';
-import { Collider } from './Collider';
-import { Player } from './Player';
+import { Collider } from './Collisions/Collider';
+import { Player } from './Paddles/Player';
 import { hue_value, score, P_START_DIST, MULTIPLAYER_START_POS, ARENA_SIZE, P1Tex, P2Tex, BallTex, DEFAULT_LINE_COLOR, DEFAULT_FIELD_COLOR, WINDOW_WIDTH, WINDOW_HEIGHT } from './main';
 import { Bubble } from './SpecialPowers/Bubble';
 import { Ice } from './SpecialPowers/Ice';
-import { Bot } from './Bot';
+import { Bot } from './Paddles/Bot';
 import { Spark } from './SpecialPowers/Spark';
 
 export class Game {

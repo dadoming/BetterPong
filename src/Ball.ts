@@ -1,13 +1,13 @@
 import * as PIXI from 'pixi.js';
 import { GameObject } from './GameObject';
-import { BallPolygon } from './Polygon';
+import { BallPolygon } from './Collisions/Polygon';
 import { Vector2D } from './utils/Vector';
-import { Bar } from './Bar';
+import { Bar } from './Paddles/Bar';
 import { score } from './main';
 import { Game } from "./Game";
 import { Bubble } from './SpecialPowers/Bubble';
 import { Line } from './utils/types';
-import { ArenaWall } from './Arena';
+import { ArenaWall } from './Collisions/Arena';
 
 export const BALL_VERTICES = 8;
 

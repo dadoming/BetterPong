@@ -3,7 +3,7 @@ import { Vector2D } from "../utils/Vector";
 import { Game } from "../Game";
 import { SpecialPower } from "./SpecialPower";
 import { BubbleTex } from "../main";
-import { Mana } from "../Mana";
+import { Mana } from "../Paddles/Mana";
 
 export class Bubble extends SpecialPower {
     constructor(center: Vector2D, velocity?: Vector2D) {

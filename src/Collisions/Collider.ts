@@ -1,7 +1,7 @@
 import { BoundingBox } from './BoundingBox';
-import { GameObject } from './GameObject';
+import { GameObject } from '../GameObject';
 import { Polygon } from './Polygon';
-import { Vector2D } from './utils/Vector';
+import { Vector2D } from '../utils/Vector';
 
 export class Collider {
     public center: Vector2D = Vector2D.Zero;
