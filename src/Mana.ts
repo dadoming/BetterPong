@@ -1,7 +1,6 @@
 import * as PIXI from 'pixi.js';
 import { Game } from './Game';
-import { Player } from './Player';
-import { Vector2D } from './Vector';
+import { Vector2D } from './utils/Vector';
 
 export class Mana {
 
@@ -91,12 +90,12 @@ export class Mana {
         Game.app.stage.addChild(this.manaBar);
     }
 
-    update(player: string): void {
+    update(player: string, delta: number): void {
         
         this.printMana(player);
         
         if (this.manaCur < this.manaMax) {
-            this.manaCur += 0.1;
+            this.manaCur += 0.1 * delta;
         }
     }
 }

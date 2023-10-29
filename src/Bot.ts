@@ -1,5 +1,5 @@
 import { Bar } from "./Bar";
-import { Vector2D } from "./Vector";
+import { Vector2D } from "./utils/Vector";
 import { Game } from "./Game";
 import * as PIXI from 'pixi.js';
 
@@ -27,11 +27,11 @@ export class Bot extends Bar {
         const ballPosition = Game.getObjectByTag('Bolinha').getCenter;
         if (ballPosition.y < this.center.y - 5) {
             this.setMove(true);
-            this.velocity = UP;
+            this.velocity = UP.multiply(this.effectVelocity);
         }
         else if (ballPosition.y > this.center.y + 5) {
             this.setMove(true);
-            this.velocity = DOWN;
+            this.velocity = DOWN.multiply(this.effectVelocity);
         }
         else {
             this.setMove(false);
@@ -43,6 +43,11 @@ export class Bot extends Bar {
             this.setCenter(new Vector2D(this.displayObject.x, this.displayObject.y));
         }
 
-        this.mana.update(this.tag);
+        this.mana.update(this.tag, delta);
+        this.energy.update(this.tag, delta);
+
+        if (this.effect !== undefined) {
+            this.effect.update(delta, this);
+        }
     }
 }

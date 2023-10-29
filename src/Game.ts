@@ -1,17 +1,17 @@
 import * as PIXI from 'pixi.js';
 import { Ball } from './Ball';
 import { GameObject } from './GameObject';
-import { Vector2D } from './Vector';
+import { Vector2D } from './utils/Vector';
 import { ArenaWall } from './Arena';
-import { Debug } from './Debug';
-import { drawLines } from './drawUtils';
+import { Debug } from './utils/Debug';
+import { drawLines } from './utils/drawUtils';
 import { Collider } from './Collider';
 import { Player } from './Player';
+import { hue_value, score, P_START_DIST, MULTIPLAYER_START_POS, ARENA_SIZE, P1Tex, P2Tex, BallTex, DEFAULT_LINE_COLOR, DEFAULT_FIELD_COLOR, WINDOW_WIDTH, WINDOW_HEIGHT } from './main';
+import { Bubble } from './SpecialPowers/Bubble';
+import { Ice } from './SpecialPowers/Ice';
 import { Bot } from './Bot';
-import { Bubble } from './Bubble';
-import { Mana } from './Mana';
-import { hue_value, score, P_START_DIST, MULTIPLAYER_START_POS, ARENA_SIZE, P1Tex, P2Tex, BallTex, BubbleTex, DEFAULT_LINE_COLOR, DEFAULT_FIELD_COLOR, WINDOW_WIDTH, WINDOW_HEIGHT } from './main';
-
+import { Spark } from './SpecialPowers/Spark';
 
 export class Game {
     private app: PIXI.Application;
@@ -26,7 +26,7 @@ export class Game {
     private collider_gameObjects: GameObject[] = [];
     private keydown_gameObjects: GameObject[] = [];
     private keyup_gameObjects: GameObject[] = [];
-
+    
     private static instance: Game;
 
     private blueTranform = new PIXI.ColorMatrixFilter();
@@ -40,21 +40,26 @@ export class Game {
             width: WINDOW_WIDTH, // 80% of the window width
             height: WINDOW_HEIGHT // 80% of the window height
         });
+        
+        // i don't know if this is the best way to do this
+        this.setCanvasSize();
+        window.addEventListener('resize', this.setCanvasSize);
 
         this.app.renderer.background.color = DEFAULT_FIELD_COLOR;
         drawLines(DEFAULT_LINE_COLOR, this.app);
 
-        const p1 = new Player(P1Tex, P_START_DIST, this.app.view.height / 2, 'Player1', new Vector2D(1, 1));
+        const p1 = new Player(P1Tex, P_START_DIST, this.app.view.height / 2, 'Player1', new Vector2D(1, 1), new Spark(Vector2D.Zero, Vector2D.Zero));
         this.blueTranform.hue(240, false);
         p1.getDisplayObject.filters = [this.blueTranform];
         Game.add(p1);
         
-        Game.add( new Player(P2Tex, this.app.view.width - P_START_DIST, this.app.view.height / 2, 'Player2', new Vector2D(-1, 1)));
+        const p2 = new Player(P2Tex, this.app.view.width - P_START_DIST, this.app.view.height / 2, 'Player2', new Vector2D(-1, 1), new Ice(Vector2D.Zero, Vector2D.Zero));
+        Game.add(p2);
         //Game.add(new Bot(P2Tex, this.app.view.width - P_START_DIST, this.app.view.height / 2, 'Player2', new Vector2D(-1, 1)));
-        //Game.add(new Bot(P2Tex, MULTIPLAYER_START_POS, this.app.view.height / 2, 'Player3', new Vector2D(-1, 1)));
-        //Game.add(new Bot(P2Tex, this.app.view.width - MULTIPLAYER_START_POS, this.app.view.height / 2, 'Player4', new Vector2D(-1, 1)));
-        Game.add(new ArenaWall(new Vector2D(0, 0), new Vector2D(this.app.view.width, ARENA_SIZE), "00ABFF"));
-        Game.add(new ArenaWall(new Vector2D(0, this.app.view.height - ARENA_SIZE), new Vector2D(this.app.view.width, ARENA_SIZE), "00ABFF"));
+        Game.add(new Bot(P2Tex, MULTIPLAYER_START_POS, this.app.view.height / 2, 'Player3', new Vector2D(-1, 1)));
+        Game.add(new Bot(P2Tex, this.app.view.width - MULTIPLAYER_START_POS, this.app.view.height / 2, 'Player4', new Vector2D(-1, 1)));
+        Game.add(new ArenaWall(new Vector2D(0, 0), new Vector2D(this.app.view.width, ARENA_SIZE), 0x00ABFF));
+        Game.add(new ArenaWall(new Vector2D(0, this.app.view.height - ARENA_SIZE), new Vector2D(this.app.view.width, ARENA_SIZE), 0x00ABFF));
         Game.add(new Ball(this.app.view.width / 2, this.app.view.height / 2, BallTex));
 
 
@@ -87,7 +92,24 @@ export class Game {
         document.addEventListener('keydown', this.handleKeyDown);
         document.addEventListener('keyup', this.handleKeyUp);
         
+
         this.debug = new Debug(this.app);
+    }
+
+    setCanvasSize() {
+        const screenWidth = WINDOW_WIDTH;
+        const screenHeight = WINDOW_HEIGHT;
+
+        const aspectRatio = 4/3;
+
+        if (screenWidth / screenHeight > aspectRatio) {
+            this.app.view.width = screenHeight * aspectRatio;
+            this.app.view.height = screenHeight;
+        }
+        else {
+            this.app.view.width = screenWidth;
+            this.app.view.height = screenWidth / aspectRatio;
+        }
     }
 
     handleKeyDown = (e: KeyboardEvent) => {

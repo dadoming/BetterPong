@@ -1,5 +1,5 @@
 import { Polygon } from './Polygon';
-import { Vector2D } from './Vector';
+import { Vector2D } from './utils/Vector';
 
 export class BoundingBox {
 

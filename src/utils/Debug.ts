@@ -1,5 +1,5 @@
 import * as PIXI from 'pixi.js';
-import { GameObject } from './GameObject';
+import { GameObject } from '../GameObject';
 
 export class Debug {
     private debugGraphics: PIXI.Graphics;
@@ -34,10 +34,6 @@ export class Debug {
         this.debugGraphics.moveTo(points[0], points[1]);
         this.debugGraphics.beginFill(0x00ff00);
         for (let i = 2; i < points.length; i += 2) {
-            if (obj.tag === 'Arena')
-            {
-                console.log(points[i], points[i + 1]);
-            }
             this.debugGraphics.lineTo(points[i], points[i + 1]);
         }
         this.debugGraphics.endFill();

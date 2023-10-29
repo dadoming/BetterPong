@@ -1,13 +1,14 @@
+import { GameObject } from "../GameObject";
+import { Vector2D } from "../utils/Vector";
 import * as PIXI from "pixi.js";
-import { GameObject } from "./GameObject";
-import { Vector2D } from "./Vector";
-import { BallPolygon } from "./Polygon";
-import { Game } from "./Game";
-import { BALL_VERTICES } from "./Ball";
-import { Line } from "./types";
+import { BallPolygon } from "../Polygon";
+import { BALL_VERTICES } from "../Ball";
+import { Game } from "../Game";
+import { Line } from "../utils/types";
+import { Mana } from "../Mana";
 
 
-export class Bubble extends GameObject {
+export abstract class SpecialPower extends GameObject {
     constructor(tag: string, texture: PIXI.Texture, center: Vector2D, velocity?: Vector2D) {
         const sprite = PIXI.Sprite.from(texture);
         sprite.anchor.set(0.5);
@@ -15,6 +16,7 @@ export class Bubble extends GameObject {
         sprite.y = center.y;
         super(tag, sprite);
 
+        this.center = center;
         this._move = true;
         this.direction = Vector2D.Zero;
         this.center = center;
@@ -39,16 +41,13 @@ export class Bubble extends GameObject {
         this.updatePolygon(this.center);
         this.collider.updateBoundingBox();
         this.setDisplayObjectCoords(this.center);
-         if (this.center.x > Game.width || this.center.x < 0 || this.center.y > Game.height || this.center.y < 0) {
-            Game.remove(this);
-         }
+        if (this.center.x > Game.width || this.center.x < 0 || this.center.y > Game.height || this.center.y < 0) {
+           Game.remove(this);
+        }
     }
 
+    abstract shootPower(center: Vector2D, mana: Mana, direction: number): void
     onCollide(target: GameObject, line: Line): void {
-
-        if (!(target instanceof Bubble))
-        {
-            Game.remove(this);
-        }
+        if (!(target instanceof SpecialPower)) Game.remove(this);
     }
 }

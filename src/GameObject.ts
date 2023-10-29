@@ -1,7 +1,7 @@
 import * as PIXI from 'pixi.js';
 import { BallPolygon } from './Polygon';
 import { Collider } from './Collider';
-import { Vector2D } from './Vector';
+import { Vector2D } from './utils/Vector';
 
 export abstract class GameObject {
     protected _move: boolean;
