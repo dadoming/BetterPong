@@ -1,4 +1,5 @@
-import { Bar } from "../Paddles/Bar";
+import { Ball } from "../Ball";
+import { GameObject } from "../GameObject";
 import { Vector2D } from "../utils/Vector";
 
 
@@ -7,7 +8,7 @@ export class Effect {
     private effectMax: number;
     private effectType: string;
     
-    constructor(effectName: string, target: Bar) {
+    constructor(effectName: string, target: GameObject) {
         this.effectCur = 0;
         this.effectMax = 100;
         this.effectType = effectName;
@@ -18,7 +19,7 @@ export class Effect {
                 target.setEffectVelocity(new Vector2D(0, 0.5));
                 break;
             case 'STOP':
-                this.effectMax = 80;
+                this.effectMax = this.effectCur + 80;
                 target.increaseHitAmount();
                 target.setEffectVelocity(new Vector2D(0, 0));
                 break;
@@ -27,10 +28,16 @@ export class Effect {
                 target.increaseHitAmount();
                 target.setEffectVelocity(new Vector2D(0, -1));
                 break;
-            case 'REVERSE-SLOW':
+            case 'FIRE-CANNON':
                 this.effectMax = 150;
                 target.increaseHitAmount();
-                target.setEffectVelocity(new Vector2D(0, -0.5));
+                target.setEffectVelocity(new Vector2D(1, 1));
+                break;
+            case 'INVISIBLE':
+                this.effectMax = 50;
+                target.increaseHitAmount();
+                target.getDisplayObject.alpha = 0;
+                target.setEffectVelocity(new Vector2D(1, 1));
                 break;
             default:
                 this.effectMax = 100;
@@ -46,16 +53,34 @@ export class Effect {
         return this.effectMax;
     }
 
-    update(delta: number, player: Bar): void {
+    get name(): string {
+        return this.effectType;
+    }
+
+    setStopEffect(): void {
+        this.effectCur = this.effectMax;
+    }
+
+    get isEffectOver(): boolean {
+        return this.effectCur >= this.effectMax;
+    }
+
+    update(delta: number, obj: GameObject): void {
         this.effectCur += delta * 0.5;
-        console.log(this.effectCur);
         if (this.effectCur >= this.effectMax) {
-            player.decreaseHitAmount();
+            obj.decreaseHitAmount();
             console.log("decrease hit amount");
-            if (player.hitAmountEffect <= 0)
+            if (obj.hitAmountEffect <= 0)
             {
-                player.setEffectVelocity(new Vector2D(0, 1));
-                player.setEffect(undefined);
+                obj.setEffectVelocity(new Vector2D(0, 1));
+                if (obj instanceof Ball)
+                {
+                    obj.setEffectVelocity(new Vector2D(1, 1));
+                }
+                obj.setEffect(undefined);
+
+                if (obj.getDisplayObject.alpha === 0)
+                    obj.getDisplayObject.alpha = 1;
             }
         }
     }

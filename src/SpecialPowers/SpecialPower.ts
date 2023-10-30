@@ -4,12 +4,15 @@ import * as PIXI from "pixi.js";
 import { BallPolygon } from "../Collisions/Polygon";
 import { BALL_VERTICES } from "../Ball";
 import { Game } from "../Game";
-import { Line } from "../utils/types";
-import { Mana } from "../Paddles/Mana";
+import { Bar } from "../Paddles/Bar";
 
+export type SpecialPowerType = "Spark" | "Bubble" | "Ice" | "Fire" | "Ghost" | undefined;
 
 export abstract class SpecialPower extends GameObject {
-    constructor(tag: string, texture: PIXI.Texture, center: Vector2D, velocity?: Vector2D) {
+
+    protected shooterObject: Bar;
+
+    constructor(tag: string, texture: PIXI.Texture, center: Vector2D, velocity: Vector2D, shooter: Bar) {
         const sprite = PIXI.Sprite.from(texture);
         sprite.anchor.set(0.5);
         sprite.x = center.x;
@@ -19,7 +22,6 @@ export abstract class SpecialPower extends GameObject {
         this.center = center;
         this._move = true;
         this.direction = Vector2D.Zero;
-        this.center = center;
         this.acceleration = 1.5;
         this.velocity = velocity || new Vector2D(5, 0);
         this.height = this.displayObject.height;
@@ -27,6 +29,7 @@ export abstract class SpecialPower extends GameObject {
         this.collider.polygon = new BallPolygon(this.center, this.width, BALL_VERTICES, []);
         this.collider.updateBoundingBox();
         this.collider.lastCollision = undefined;
+        this.shooterObject = shooter;
     }
 
     updatePolygon(center: Vector2D): void {
@@ -46,8 +49,9 @@ export abstract class SpecialPower extends GameObject {
         }
     }
 
-    abstract shootPower(center: Vector2D, mana: Mana, direction: number): void
-    onCollide(target: GameObject, line: Line): void {
-        if (!(target instanceof SpecialPower)) Game.remove(this);
+    onCollide(target: GameObject): void {
+        if (!(target instanceof SpecialPower)) 
+            Game.remove(this);
     }
+
 }

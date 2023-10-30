@@ -8,10 +8,12 @@ import { Game } from "./Game";
 import { Bubble } from './SpecialPowers/Bubble';
 import { Line } from './utils/types';
 import { ArenaWall } from './Collisions/Arena';
+import { Fire } from './SpecialPowers/Fire';
 
 export const BALL_VERTICES = 8;
 
 export class Ball extends GameObject {
+
     constructor(x: number, y: number, texture: PIXI.Texture) {
         const sprite = PIXI.Sprite.from(texture);
         sprite.anchor.set(0.5);
@@ -33,6 +35,9 @@ export class Ball extends GameObject {
         blueTranform.hue(60, false);
         this.getDisplayObject.filters = [blueTranform];
         this.collider.lastCollision = undefined
+        
+        this.effect = undefined;
+        this.effectVelocity = new Vector2D(1, 1);
     }
 
     getRandomVelocity(): Vector2D {
@@ -49,6 +54,8 @@ export class Ball extends GameObject {
         this.velocity = this.getRandomVelocity();
         this.acceleration = 1;
         this._move = true;
+        if (this.effect !== undefined)
+            this.effect?.setStopEffect();
     }
 
     resetBall(x: number): void {
@@ -86,6 +93,9 @@ export class Ball extends GameObject {
                 this.center.y + (this.move ? this.velocity.y * this.acceleration * delta : 0)
             )
         );
+        if (this.effect !== undefined) {
+            this.effect.update(delta, this);
+        }
     }
 
     // Nao esquecer de adicionar aqui os powers que tenham colisao com a bola
@@ -93,8 +103,8 @@ export class Ball extends GameObject {
         this.collider.lastCollision = target.collider;
     
         if (target instanceof ArenaWall)
-        {
-            this.velocity.y = -this.velocity.y;     
+        { 
+            this.velocity.y = -this.velocity.y;
         }
         else if (target instanceof Bar || target instanceof Bubble) {
             // where the ball hit
@@ -111,7 +121,7 @@ export class Ball extends GameObject {
     
             // Store the current speed (magnitude of velocity)
             const currentSpeed = Math.sqrt(this.getVelocity.x ** 2 + this.getVelocity.y ** 2);
-            
+
             // Change the X and Y velocity direction
             this.getVelocity.x = currentSpeed * Math.cos(angleRad) * direction;
             this.getVelocity.y = currentSpeed * -Math.sin(angleRad);
@@ -121,7 +131,7 @@ export class Ball extends GameObject {
                 this.setAcceleration(this.getAcceleration + 0.15);
             if (this.center.y <= target.getCenter.y - (target.getHeight / 2) || this.center.y >= target.getCenter.y + (target.getHeight / 2))
             {
-                this.setVelocity(new Vector2D(-this.getVelocity.x, -this.getVelocity.y));
+                this.setVelocity(new Vector2D(-this.getVelocity.x, -this.getVelocity.y).multiply(this.effectVelocity));
                 return;
             }
         }

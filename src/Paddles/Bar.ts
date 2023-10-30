@@ -3,20 +3,28 @@ import { GameObject } from '../GameObject';
 import { BarPolygon } from '../Collisions/Polygon';
 import { Vector2D } from '../utils/Vector';
 import { Mana } from './Mana';
-import { Ice } from '../SpecialPowers/Ice';
-import { Bubble } from '../SpecialPowers/Bubble';
 import { Energy } from './Energy';
-import { Effect } from '../SpecialPowers/Effect';
+import { SpecialPowerType } from '../SpecialPowers/SpecialPower';
+import { SpecialPower } from '../SpecialPowers/SpecialPower';
+import { Shooter } from '../SpecialPowers/Shooter';
+
+import { Bubble } from '../SpecialPowers/Bubble';
+import { Ice } from '../SpecialPowers/Ice';
+import { Fire } from '../SpecialPowers/Fire';
+import { Spark } from '../SpecialPowers/Spark';
+import { Ghost } from '../SpecialPowers/Ghost';
+
 
 export class Bar extends GameObject {
 
     protected mana: Mana;
     protected energy: Energy;
-    protected specialPower: Bubble | Ice | undefined;
+    protected specialPowerType: SpecialPowerType;
+
+    public power: SpecialPower | undefined = undefined;
     
-    protected hitAmount: number = 0;
-    protected effect: Effect | undefined;
-    protected effectVelocity: Vector2D = new Vector2D(0, 1);
+    public shooter: Shooter | undefined = undefined;
+    public isShooting: boolean = false;
 
     constructor(texture: PIXI.Texture, x: number, y: number, tag: string, public direction: Vector2D) {
         const sprite = PIXI.Sprite.from(texture);
@@ -37,8 +45,25 @@ export class Bar extends GameObject {
         this.collider.updateBoundingBox();
         this.mana = new Mana(this.tag);
         this.energy = new Energy(this.tag);
-        this.specialPower = undefined;
         this.effect = undefined;
+        
+        this.shooter = undefined;
+    }
+
+    get manaBar(): Mana {
+        return this.mana;
+    }
+    setShooter(shooter: Shooter | undefined): void {
+        if (shooter !== undefined)
+        {
+            this.shooter = shooter;
+            this.isShooting = true;
+        }
+        else
+        {
+            this.isShooting = false;
+            this.shooter = undefined;
+        }
     }
 
     setScaleDisplayObject(scale: number): void {
@@ -57,25 +82,6 @@ export class Bar extends GameObject {
         this.setDisplayObjectCoords(this.center);
     }
 
-    get getEffect(): Effect | undefined {
-        return this.effect;
-    }
-    setEffect(effect: Effect): void {
-        this.effect = effect;
-    }
-    get hitAmountEffect(): number {
-        return this.hitAmount;
-    }
-    increaseHitAmount(): void {
-        this.hitAmount += 1;
-    }
-    decreaseHitAmount(): void {
-        this.hitAmount -= 1;
-    }
-    setEffectVelocity(velocity: Vector2D): void {
-        this.effectVelocity = velocity;
-    }
-
     updatePolygon(center: Vector2D): void {
         this.collider.polygon.update(center);
         this.collider.updateBoundingBox();
@@ -91,6 +97,8 @@ export class Bar extends GameObject {
         if (this.effect !== undefined) {
             this.effect.update(delta, this);
         }
+        if (this.shooter !== undefined)
+            this.shooter.update(delta ,this);
     }
 
     checkArenaCollision(): boolean {
@@ -103,6 +111,60 @@ export class Bar extends GameObject {
         }
         return true;
     }
+
+    public static create(specialPower: SpecialPowerType, center: Vector2D, direction: number, shooter: Bar) {
+        switch (specialPower) {
+            case "Bubble":
+                return new Bubble(new Vector2D(center.x + (40 * direction), center.y), new Vector2D(direction === 1 ? 5 : -5, 0), shooter);
+            case "Ice":
+                return new Ice(new Vector2D(center.x + (40 * direction), center.y), new Vector2D(direction === 1 ? 5 : -5, 0), shooter);
+            case "Fire":
+                return new Fire(new Vector2D(center.x + (40 * direction), center.y), new Vector2D(direction === 1 ? 5 : -5, 0), shooter);
+            case "Spark":
+                return new Spark(new Vector2D(center.x + (40 * direction), center.y), new Vector2D(direction === 1 ? 5 : -5, 0), shooter);
+            case "Ghost":
+                return new Ghost(new Vector2D(center.x + (40 * direction), center.y), new Vector2D(direction === 1 ? 5 : -5, 0), shooter);
+        }
+    }
+
+    hasEnoughMana(): boolean {
+        switch (this.specialPowerType) {
+            case "Bubble":
+                return this.manaBar.isManaEnough(20);
+            case "Fire":
+                return this.manaBar.isManaEnough(50);
+            case "Ice":
+                return this.manaBar.isManaEnough(40);
+            case "Spark":
+                return this.manaBar.isManaEnough(30);
+            case "Ghost":
+                return this.manaBar.isManaEnough(35);
+            default:
+                return false;
+        }
+    }
+    spendMana(): void {
+        switch (this.specialPowerType) {
+            case "Bubble":
+                this.manaBar.spendMana(20);
+                break;
+            case "Fire":
+                this.manaBar.spendMana(50);
+                break;
+            case "Ice":
+                this.manaBar.spendMana(40);
+                break;
+            case "Spark":
+                this.manaBar.spendMana(30);
+                break;
+            case "Ghost":
+                this.manaBar.spendMana(35);
+                break;
+        }
+    }
+
+
+
 }
 
 

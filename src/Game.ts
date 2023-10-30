@@ -8,10 +8,30 @@ import { drawLines } from './utils/drawUtils';
 import { Collider } from './Collisions/Collider';
 import { Player } from './Paddles/Player';
 import { hue_value, score, P_START_DIST, MULTIPLAYER_START_POS, ARENA_SIZE, P1Tex, P2Tex, BallTex, DEFAULT_LINE_COLOR, DEFAULT_FIELD_COLOR, WINDOW_WIDTH, WINDOW_HEIGHT } from './main';
-import { Bubble } from './SpecialPowers/Bubble';
-import { Ice } from './SpecialPowers/Ice';
 import { Bot } from './Paddles/Bot';
-import { Spark } from './SpecialPowers/Spark';
+
+import { KeyControls } from './Paddles/Player';
+
+/**
+ * 
+ *  HARDCODE
+ * 
+ */
+
+const keys1: KeyControls = {
+    up: 'w',
+    down: 's',
+    boost: 'a',
+    shoot: 'q',
+};
+
+const keys2: KeyControls = {
+    up: 'ArrowUp',
+    down: 'ArrowDown',
+    boost: 'ArrowLeft',
+    shoot: 'ArrowRight',
+};
+
 
 export class Game {
     private app: PIXI.Application;
@@ -48,16 +68,16 @@ export class Game {
         this.app.renderer.background.color = DEFAULT_FIELD_COLOR;
         drawLines(DEFAULT_LINE_COLOR, this.app);
 
-        const p1 = new Player(P1Tex, P_START_DIST, this.app.view.height / 2, 'Player1', new Vector2D(1, 1), new Spark(Vector2D.Zero, Vector2D.Zero));
+        const p1 = new Player(P1Tex, P_START_DIST, this.app.view.height / 2, keys1, 'Player1', new Vector2D(1, 1), "Ghost");
         this.blueTranform.hue(240, false);
         p1.getDisplayObject.filters = [this.blueTranform];
         Game.add(p1);
         
-        const p2 = new Player(P2Tex, this.app.view.width - P_START_DIST, this.app.view.height / 2, 'Player2', new Vector2D(-1, 1), new Ice(Vector2D.Zero, Vector2D.Zero));
+        const p2 = new Player(P2Tex, this.app.view.width - P_START_DIST, this.app.view.height / 2, keys2, 'Player2', new Vector2D(-1, 1), "Bubble");
         Game.add(p2);
         //Game.add(new Bot(P2Tex, this.app.view.width - P_START_DIST, this.app.view.height / 2, 'Player2', new Vector2D(-1, 1)));
-        Game.add(new Bot(P2Tex, MULTIPLAYER_START_POS, this.app.view.height / 2, 'Player3', new Vector2D(-1, 1)));
-        Game.add(new Bot(P2Tex, this.app.view.width - MULTIPLAYER_START_POS, this.app.view.height / 2, 'Player4', new Vector2D(-1, 1)));
+        //Game.add(new Bot(P2Tex, MULTIPLAYER_START_POS, this.app.view.height / 2, 'Player3', new Vector2D(-1, 1)));
+        //Game.add(new Bot(P2Tex, this.app.view.width - MULTIPLAYER_START_POS, this.app.view.height / 2, 'Player4', new Vector2D(-1, 1)));
         Game.add(new ArenaWall(new Vector2D(0, 0), new Vector2D(this.app.view.width, ARENA_SIZE), 0x00ABFF));
         Game.add(new ArenaWall(new Vector2D(0, this.app.view.height - ARENA_SIZE), new Vector2D(this.app.view.width, ARENA_SIZE), 0x00ABFF));
         Game.add(new Ball(this.app.view.width / 2, this.app.view.height / 2, BallTex));
@@ -138,32 +158,66 @@ export class Game {
         text.x = 200;
         text.y = 10;
         this.app.stage.addChild(text);
+
+        // let running = true;
+
+        // let time_now = Date.now();
+        // let last_time = time_now;
+        // while(running)
+        // {
+        //     time_now = Date.now();
+        //     const delta = time_now - last_time;
+        //     last_time = time_now;
+        //     if (delta > 0) {
+
+        //         text.text = Math.round(this.app.ticker.FPS).toString();
+
+        //         this.gameObjects.forEach((gameObject: GameObject) => gameObject.collider.reset());
+        //         this.scoreElement.text = `${score[0]}     ${score[1]}`;
+
+        //         this.collider_gameObjects.forEach((target: GameObject) => {
+        //             this.gameObjects.forEach((gameObject: GameObject) => {
+        //                 if (target != gameObject) Collider.collidingObjects(gameObject, target);
+        //             });
+        //         });
+
+        //         this.gameObjects.forEach((gameObject: GameObject) => {
+        //             gameObject.update(delta);
+        //         });
+
+        //         if (this.remove_gameObjects.length > 0) this.removeObjects();
+
+        //         this.debug.clear();
+        //         if (this.isDebug) this.debug.debugDraw(this.gameObjects);
+        //     }
+        // }
+
         this.app.ticker.add((delta) => {
-            if (this.runGame) {
+           if (this.runGame) {
 
-                text.text = Math.round(this.app.ticker.FPS).toString();
-                        
-                this.gameObjects.forEach((gameObject: GameObject) => gameObject.collider.reset());
-                
-                this.scoreElement.text = `${score[0]}     ${score[1]}`;
-                this.backgroundHue.hue(hue_value, false);      
+               text.text = Math.round(this.app.ticker.FPS).toString();
+                       
+               this.gameObjects.forEach((gameObject: GameObject) => gameObject.collider.reset());
+               
+               this.scoreElement.text = `${score[0]}     ${score[1]}`;
+               this.backgroundHue.hue(hue_value, false);      
 
-                //hue_value += 1;
-                this.collider_gameObjects.forEach((target: GameObject) => {
-                    this.gameObjects.forEach((gameObject: GameObject) => {
-                        if (target != gameObject) Collider.collidingObjects(gameObject, target);
-                    });
-                });
+               //hue_value += 1;
+               this.collider_gameObjects.forEach((target: GameObject) => {
+                   this.gameObjects.forEach((gameObject: GameObject) => {
+                       if (target != gameObject) Collider.collidingObjects(gameObject, target);
+                   });
+               });
 
-                this.gameObjects.forEach((gameObject: GameObject) => {
-                    gameObject.update(delta);
-                });
-                
-                if (this.remove_gameObjects.length > 0) this.removeObjects();
-            
-                this.debug.clear();
-                if (this.isDebug) this.debug.debugDraw(this.gameObjects);
-            }
+               this.gameObjects.forEach((gameObject: GameObject) => {
+                   gameObject.update(delta);
+               });
+               
+               if (this.remove_gameObjects.length > 0) this.removeObjects();
+           
+               this.debug.clear();
+               if (this.isDebug) this.debug.debugDraw(this.gameObjects);
+           }
         });
     }
 
@@ -185,7 +239,7 @@ export class Game {
         this.keydown_gameObjects = this.keydown_gameObjects.filter((value: GameObject) => !this.remove_gameObjects.includes(value)) 
         this.keyup_gameObjects = this.keyup_gameObjects.filter((value: GameObject) => !this.remove_gameObjects.includes(value)) 
         this.gameObjects = this.gameObjects.filter((value: GameObject) => !this.remove_gameObjects.includes(value)) 
-        
+        this.remove_gameObjects.forEach((gameObject: GameObject) => gameObject?.onDestroy?.());
         this.app.stage.removeChild(...this.remove_gameObjects.map(e => e.getDisplayObject));
         this.remove_gameObjects.length = 0;
     }

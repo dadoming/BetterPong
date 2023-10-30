@@ -25,13 +25,16 @@ export const DEFAULT_FIELD_COLOR = 0x000000;
 // this is for the powers that the players shoot do not collide with the friendly player
 export const multiplayerON = true;
 
+
 export const P1Tex = await PIXI.Texture.fromURL('assets/RedBar2.png');
 export const P2Tex = await PIXI.Texture.fromURL('assets/RedBar2.png');
 export const BallTex = await PIXI.Texture.fromURL('assets/Ball.png');
 export const BubbleTex = await PIXI.Texture.fromURL('assets/bubble_3.png');
 export const IceTex = await PIXI.Texture.fromURL('assets/iceball.png');
 export const SparkTex = await PIXI.Texture.fromURL('assets/spark.png');
+export const FireTex = await PIXI.Texture.fromURL('assets/fireball.png');
+export const GhostTex = await PIXI.Texture.fromURL('assets/ghost.png');
+
 
 const game = new Game();
-
 game.start();

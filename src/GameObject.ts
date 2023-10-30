@@ -2,6 +2,7 @@ import * as PIXI from 'pixi.js';
 import { BallPolygon } from './Collisions/Polygon';
 import { Collider } from './Collisions/Collider';
 import { Vector2D } from './utils/Vector';
+import { Effect } from './SpecialPowers/Effect';
 
 export abstract class GameObject {
     protected _move: boolean;
@@ -14,6 +15,10 @@ export abstract class GameObject {
     protected width: number;
     public collider: Collider;
 
+    protected hitAmount: number = 0;
+    protected effect: Effect | undefined;
+    protected effectVelocity: Vector2D = new Vector2D(1, 1);
+
     constructor(public tag: string, protected displayObject: PIXI.Container) {
         this._move = false;
         this.acceleration = 0;
@@ -25,6 +30,26 @@ export abstract class GameObject {
         this.width = 0;
         this.collider = Collider.fromPolygon(new BallPolygon(this.center, 0, 0, []));
         this.collider.lastCollision = false;
+        this.effect = undefined;
+    }
+
+    get getEffect(): Effect | undefined {
+        return this.effect;
+    }
+    setEffect(effect: Effect | undefined): void {
+        this.effect = effect;
+    }
+    get hitAmountEffect(): number {
+        return this.hitAmount;
+    }
+    increaseHitAmount(): void {
+        this.hitAmount += 1;
+    }
+    decreaseHitAmount(): void {
+        this.hitAmount -= 1;
+    }
+    setEffectVelocity(velocity: Vector2D): void {
+        this.effectVelocity = velocity;
     }
 
     setMove(move: boolean): void {
@@ -89,4 +114,5 @@ export abstract class GameObject {
     onCollide?(target: GameObject, line: { start: Vector2D; end: Vector2D }): void;
     onKeyDown?(e: KeyboardEvent): void;
     onKeyUp?(e: KeyboardEvent): void;
+    onDestroy?(): void;
 }
