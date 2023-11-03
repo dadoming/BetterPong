@@ -2,7 +2,6 @@ import { BallPolygon } from './Collisions/Polygon';
 import { Collider } from './Collisions/Collider';
 import { Vector2D } from './utils/Vector';
 import { Effect } from './SpecialPowers/Effect';
-import * as PIXI from 'pixi.js';
 import { Game } from './Game';
 
 export abstract class GameObject {
@@ -108,11 +107,4 @@ export abstract class GameObject {
     onKeyDown?(e: KeyboardEvent): void;
     onKeyUp?(e: KeyboardEvent): void;
     onDestroy?(): void;
-}
-
-export abstract class UIGameObject extends GameObject {
-    abstract readonly displayObject: PIXI.Container;
-    constructor(tag: string, game: Game) {
-        super(tag, game);
-    }
 }

@@ -1,23 +1,33 @@
 import * as PIXI from 'pixi.js';
-import { GameObject } from '../GameObject';
+import { UIGameObject } from '../GameObject';
 
 export class Debug {
     private debugGraphics: PIXI.Graphics;
     private graphics: PIXI.Graphics[] = [];
 
+    public _enabled = false;
+    public get isDebug(): boolean {
+        return this._enabled;
+    }
+    public set isDebug(value: boolean) {
+        this._enabled = value;
+        if (value === false)
+            this.clear();
+    }
     constructor(public app: PIXI.Application) {
         this.debugGraphics = new PIXI.Graphics();
         app.stage.addChild(this.debugGraphics);
     }
 
-    debugDraw(gameObj: GameObject[], ): void {
+    debugDraw(gameObj: UIGameObject[], ): void {
+        if (this._enabled === false) return;
         this.clear();
         gameObj.forEach((obj) => {
             this.drawPolygon(obj);
         });
     }
 
-    drawPolygon(obj: GameObject) {
+    drawPolygon(obj: UIGameObject) {
         const polygon = obj.collider.polygon;
         const points = polygon.getPoints;
 

@@ -7,11 +7,11 @@ import { SpecialPowerType } from '../SpecialPowers/SpecialPower';
 import { SpecialPower } from '../SpecialPowers/SpecialPower';
 import { Shooter } from '../SpecialPowers/Shooter';
 
-import { UIBubble } from '../SpecialPowers/Bubble';
-import { UIIce } from '../SpecialPowers/Ice';
-import { UIFire } from '../SpecialPowers/Fire';
-import { UISpark } from '../SpecialPowers/Spark';
-import { UIGhost } from '../SpecialPowers/Ghost';
+import { Bubble } from '../SpecialPowers/Bubble';
+import { Ice } from '../SpecialPowers/Ice';
+import { Fire } from '../SpecialPowers/Fire';
+import { Spark } from '../SpecialPowers/Spark';
+import { Ghost } from '../SpecialPowers/Ghost';
 
 import { paddleConfig } from '../main';
 import { Game } from '../Game';
@@ -93,15 +93,15 @@ export abstract class Bar extends GameObject {
     public static create(specialPower: SpecialPowerType, center: Vector2D, direction: number, shooter: Bar) {
         switch (specialPower) {
             case "Bubble":
-                return new UIBubble(new Vector2D(center.x + (40 * direction), center.y), new Vector2D(direction === 1 ? 5 : -5, 0), shooter);
+                return new Bubble(new Vector2D(center.x + (40 * direction), center.y), new Vector2D(direction === 1 ? 5 : -5, 0), shooter);
             case "Ice":
-                return new UIIce(new Vector2D(center.x + (40 * direction), center.y), new Vector2D(direction === 1 ? 5 : -5, 0), shooter);
+                return new Ice(new Vector2D(center.x + (40 * direction), center.y), new Vector2D(direction === 1 ? 5 : -5, 0), shooter);
             case "Fire":
-                return new UIFire(new Vector2D(center.x + (40 * direction), center.y), new Vector2D(direction === 1 ? 5 : -5, 0), shooter);
+                return new Fire(new Vector2D(center.x + (40 * direction), center.y), new Vector2D(direction === 1 ? 5 : -5, 0), shooter);
             case "Spark":
-                return new UISpark(new Vector2D(center.x + (40 * direction), center.y), new Vector2D(direction === 1 ? 5 : -5, 0), shooter);
+                return new Spark(new Vector2D(center.x + (40 * direction), center.y), new Vector2D(direction === 1 ? 5 : -5, 0), shooter);
             case "Ghost":
-                return new UIGhost(new Vector2D(center.x + (40 * direction), center.y), new Vector2D(direction === 1 ? 5 : -5, 0), shooter);
+                return new Ghost(new Vector2D(center.x + (40 * direction), center.y), new Vector2D(direction === 1 ? 5 : -5, 0), shooter);
         }
     }
 

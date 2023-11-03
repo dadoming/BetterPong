@@ -67,6 +67,7 @@ export class Ball extends GameObject {
     }
 
     update(delta: number): void {
+        console.log(this.center.x, this.center.y);
         if (this.center.x <= 0 || this.center.x >= this.game.width) {
             this.resetBall(this.center.x);
         }

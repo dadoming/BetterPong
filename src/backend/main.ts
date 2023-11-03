@@ -1,5 +1,5 @@
 import * as PIXI from 'pixi.js';
-import { Game, UIGame } from './Game';
+import { Game } from './Game';
 import { Vector2D } from './utils/Vector';
 
 /* ----------------------- Game Config ----------------------- */
@@ -147,5 +147,5 @@ export const FireTex = await PIXI.Texture.fromURL('assets/fireball.png');
 export const GhostTex = await PIXI.Texture.fromURL('assets/ghost.png');
 
 
-const game = new UIGame(800, 600);
+const game = new Game(800, 600);
 game.start();

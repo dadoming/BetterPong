@@ -1,87 +1,160 @@
 import * as PIXI from 'pixi.js';
-import { Ball } from './Ball';
-import { GameObject } from './GameObject';
+import { UIBall } from './Ball';
+import { GameObject, UIGameObject } from './GameObject';
 import { Vector2D } from './utils/Vector';
-import { ArenaWall } from './Collisions/Arena';
+import { UIArenaWall } from './Collisions/Arena';
 import { Debug } from './utils/Debug';
 import { drawLines } from './utils/drawUtils';
 import { Collider } from './Collisions/Collider';
-import { Player } from './Paddles/Player';
-import { hue_value, score, P_START_DIST, MULTIPLAYER_START_POS, ARENA_SIZE, P1Tex, P2Tex, BallTex, DEFAULT_LINE_COLOR, DEFAULT_FIELD_COLOR, WINDOW_WIDTH, WINDOW_HEIGHT } from './main';
+import { UIPlayer } from './Paddles/Player';
+import {
+    hue_value,
+    score,
+    P_START_DIST,
+    MULTIPLAYER_START_POS,
+    ARENA_SIZE,
+    P1Tex,
+    P2Tex,
+    BallTex,
+    DEFAULT_LINE_COLOR,
+    DEFAULT_FIELD_COLOR,
+    WINDOW_WIDTH,
+    WINDOW_HEIGHT,
+    gameConfig
+} from './main';
 import { Bot } from './Paddles/Bot';
+import { SpecialPower, SpecialPowerType, UISpecialPower } from './SpecialPowers/SpecialPower';
 
 import { KeyControls } from './Paddles/Player';
 
 /**
- * 
+ *
  *  HARDCODE
- * 
+ *
  */
 
 const keys1: KeyControls = {
     up: 'w',
     down: 's',
     boost: 'a',
-    shoot: 'q',
+    shoot: 'q'
 };
 
 const keys2: KeyControls = {
     up: 'ArrowUp',
     down: 'ArrowDown',
     boost: 'ArrowLeft',
-    shoot: 'ArrowRight',
+    shoot: 'ArrowRight'
 };
 
-
 export class Game {
-    private app: PIXI.Application;
+    public run = true;
+    public gameObjects: UIGameObject[] = [];
+    protected remove_gameObjects: UIGameObject[] = [];
+    protected collider_gameObjects: UIGameObject[] = [];
+    protected keydown_gameObjects: UIGameObject[] = [];
+    protected keyup_gameObjects: UIGameObject[] = [];
+
+    // add array for changed objects to send to client
+
+    constructor(public width: number, public height: number) {}
+
+    start() {}
+
+    public add(gameObject: UIGameObject) {
+        this.gameObjects.push(gameObject);
+        if (gameObject?.onCollide != undefined) this.collider_gameObjects.push(gameObject);
+        if (gameObject?.onKeyDown != undefined) this.keydown_gameObjects.push(gameObject);
+        if (gameObject?.onKeyUp != undefined) this.keyup_gameObjects.push(gameObject);
+    }
+
+    public remove(gameObject: UIGameObject) {
+        this.remove_gameObjects.push(gameObject);
+    }
+
+    protected removeObjects() {
+        this.collider_gameObjects = this.collider_gameObjects.filter(
+            (value: UIGameObject) => !this.remove_gameObjects.includes(value)
+        );
+        this.keydown_gameObjects = this.keydown_gameObjects.filter(
+            (value: UIGameObject) => !this.remove_gameObjects.includes(value)
+        );
+        this.keyup_gameObjects = this.keyup_gameObjects.filter(
+            (value: UIGameObject) => !this.remove_gameObjects.includes(value)
+        );
+        this.gameObjects = this.gameObjects.filter((value: UIGameObject) => !this.remove_gameObjects.includes(value));
+        this.remove_gameObjects.forEach((gameObject: UIGameObject) => gameObject?.onDestroy?.());
+        this.remove_gameObjects.length = 0;
+    }
+
+    public applyOnAllObjects(func: (gameObject: UIGameObject) => void) {
+        this.gameObjects.forEach((gameObject: UIGameObject) => {
+            func(gameObject);
+        });
+    }
+
+    getObjectByTag(tag: string): UIGameObject | undefined {
+        return this.gameObjects.find((gameObject: UIGameObject) => gameObject.tag === tag);
+    }
+}
+
+export class UIGame extends Game {
+    public app: PIXI.Application;
     private debug: Debug;
     private scoreElement: PIXI.Text;
     private scoreStyle: PIXI.TextStyle;
-    public runGame = true;
-    public isDebug = false;
-
-    public gameObjects: GameObject[] = [];
-    private remove_gameObjects: GameObject[] = [];
-    private collider_gameObjects: GameObject[] = [];
-    private keydown_gameObjects: GameObject[] = [];
-    private keyup_gameObjects: GameObject[] = [];
-    
-    private static instance: Game;
 
     private blueTranform = new PIXI.ColorMatrixFilter();
     private backgroundHue = new PIXI.ColorMatrixFilter();
-    constructor() {
-        Game.instance = this;
-        
+
+    constructor(width: number, height: number) {
+        super(width, height);
         this.app = new PIXI.Application({
             background: DEFAULT_FIELD_COLOR,
             antialias: true, // smooth edge rendering
-            width: WINDOW_WIDTH, // 80% of the window width
-            height: WINDOW_HEIGHT // 80% of the window height
+            width, // 80% of the window width
+            height // 80% of the window height
         });
-        
-        // i don't know if this is the best way to do this
-        this.setCanvasSize();
-        window.addEventListener('resize', this.setCanvasSize);
-
         this.app.renderer.background.color = DEFAULT_FIELD_COLOR;
         drawLines(DEFAULT_LINE_COLOR, this.app);
-
-        const p1 = new Player(P1Tex, P_START_DIST, this.app.view.height / 2, keys1, 'Player1', new Vector2D(1, 1), "Ghost");
+        const p1 = new UIPlayer(
+            P1Tex,
+            P_START_DIST,
+            this.app.view.height / 2,
+            keys1,
+            'Player1',
+            new Vector2D(1, 1),
+            gameConfig.p1.specialPower as SpecialPowerType,
+            this
+        );
         this.blueTranform.hue(240, false);
-        p1.getDisplayObject.filters = [this.blueTranform];
-        Game.add(p1);
-        
-        const p2 = new Player(P2Tex, this.app.view.width - P_START_DIST, this.app.view.height / 2, keys2, 'Player2', new Vector2D(-1, 1), "Bubble");
-        Game.add(p2);
-        //Game.add(new Bot(P2Tex, this.app.view.width - P_START_DIST, this.app.view.height / 2, 'Player2', new Vector2D(-1, 1)));
-        //Game.add(new Bot(P2Tex, MULTIPLAYER_START_POS, this.app.view.height / 2, 'Player3', new Vector2D(-1, 1)));
-        //Game.add(new Bot(P2Tex, this.app.view.width - MULTIPLAYER_START_POS, this.app.view.height / 2, 'Player4', new Vector2D(-1, 1)));
-        Game.add(new ArenaWall(new Vector2D(0, 0), new Vector2D(this.app.view.width, ARENA_SIZE), 0x00ABFF));
-        Game.add(new ArenaWall(new Vector2D(0, this.app.view.height - ARENA_SIZE), new Vector2D(this.app.view.width, ARENA_SIZE), 0x00ABFF));
-        Game.add(new Ball(this.app.view.width / 2, this.app.view.height / 2, BallTex));
+        p1.displayObject.filters = [this.blueTranform];
+        this.add(p1);
 
+        const p2 = new UIPlayer(
+            P2Tex,
+            this.app.view.width - P_START_DIST,
+            this.app.view.height / 2,
+            keys2,
+            'Player2',
+            new Vector2D(-1, 1),
+            'Bubble',
+            this
+        );
+        this.add(p2);
+        //this.add(new Bot(P2Tex, this.app.view.width - P_START_DIST, this.app.view.height / 2, 'Player2', new Vector2D(-1, 1)));
+        //this.add(new Bot(P2Tex, MULTIPLAYER_START_POS, this.app.view.height / 2, 'Player3', new Vector2D(-1, 1)));
+        //this.add(new Bot(P2Tex, this.app.view.width - MULTIPLAYER_START_POS, this.app.view.height / 2, 'Player4', new Vector2D(-1, 1)));
+        this.add(new UIArenaWall(new Vector2D(0, 0), new Vector2D(this.app.view.width, ARENA_SIZE), 0x00abff, this));
+        this.add(
+            new UIArenaWall(
+                new Vector2D(0, this.app.view.height - ARENA_SIZE),
+                new Vector2D(this.app.view.width, ARENA_SIZE),
+                0x00abff,
+                this
+            )
+        );
+        this.add(new UIBall(this.app.view.width / 2, this.app.view.height / 2, BallTex, this));
 
         // true or false?
         // this.blueTranform.hue(120, false);
@@ -111,47 +184,32 @@ export class Game {
 
         document.addEventListener('keydown', this.handleKeyDown);
         document.addEventListener('keyup', this.handleKeyUp);
-        
+
+        //window.addEventListener('resize', this.setCanvasSize.bind(this));
 
         this.debug = new Debug(this.app);
     }
 
-    setCanvasSize() {
-        const screenWidth = WINDOW_WIDTH;
-        const screenHeight = WINDOW_HEIGHT;
-
-        const aspectRatio = 4/3;
-
-        if (screenWidth / screenHeight > aspectRatio) {
-            this.app.view.width = screenHeight * aspectRatio;
-            this.app.view.height = screenHeight;
-        }
-        else {
-            this.app.view.width = screenWidth;
-            this.app.view.height = screenWidth / aspectRatio;
-        }
-    }
-
     handleKeyDown = (e: KeyboardEvent) => {
-        this.keydown_gameObjects.forEach((gameObject: GameObject) => {
+        this.keydown_gameObjects.forEach((gameObject: UIGameObject) => {
             if (gameObject?.onKeyDown != undefined) {
                 gameObject.onKeyDown.bind(gameObject)(e);
             }
         });
         if (e.key === 't') {
-            Game.getObjectByTag('Bolinha')?.setMove(!this.runGame);
-            this.runGame = !this.runGame;   
+            this.getObjectByTag('Bolinha')?.setMove(!this.run);
+            this.run = !this.run;
         }
-        if (e.key === 'p')
-            this.isDebug = !this.isDebug;
+        if (e.key === 'p') this.debug.isDebug = !this.debug.isDebug;
     };
     handleKeyUp = (e: KeyboardEvent) => {
-        this.keyup_gameObjects.forEach((gameObject: GameObject) => {
+        this.keyup_gameObjects.forEach((gameObject: UIGameObject) => {
             if (gameObject?.onKeyUp) gameObject.onKeyUp.bind(gameObject)(e);
         });
     };
 
     start() {
+        super.start();
         this.app.ticker.minFPS = 30;
         this.app.ticker.maxFPS = 120;
         const text = new PIXI.Text(this.app.ticker.FPS, { fill: 'white' });
@@ -159,110 +217,41 @@ export class Game {
         text.y = 10;
         this.app.stage.addChild(text);
 
-        // let running = true;
-
-        // let time_now = Date.now();
-        // let last_time = time_now;
-        // while(running)
-        // {
-        //     time_now = Date.now();
-        //     const delta = time_now - last_time;
-        //     last_time = time_now;
-        //     if (delta > 0) {
-
-        //         text.text = Math.round(this.app.ticker.FPS).toString();
-
-        //         this.gameObjects.forEach((gameObject: GameObject) => gameObject.collider.reset());
-        //         this.scoreElement.text = `${score[0]}     ${score[1]}`;
-
-        //         this.collider_gameObjects.forEach((target: GameObject) => {
-        //             this.gameObjects.forEach((gameObject: GameObject) => {
-        //                 if (target != gameObject) Collider.collidingObjects(gameObject, target);
-        //             });
-        //         });
-
-        //         this.gameObjects.forEach((gameObject: GameObject) => {
-        //             gameObject.update(delta);
-        //         });
-
-        //         if (this.remove_gameObjects.length > 0) this.removeObjects();
-
-        //         this.debug.clear();
-        //         if (this.isDebug) this.debug.debugDraw(this.gameObjects);
-        //     }
-        // }
-
         this.app.ticker.add((delta) => {
-           if (this.runGame) {
+            if (this.run) {
+                console.log(delta)
+                text.text = Math.round(this.app.ticker.FPS).toString();
 
-               text.text = Math.round(this.app.ticker.FPS).toString();
-                       
-               this.gameObjects.forEach((gameObject: GameObject) => gameObject.collider.reset());
-               
-               this.scoreElement.text = `${score[0]}     ${score[1]}`;
-               this.backgroundHue.hue(hue_value, false);      
+                this.gameObjects.forEach((gameObject: UIGameObject) => gameObject.collider.reset());
 
-               //hue_value += 1;
-               this.collider_gameObjects.forEach((target: GameObject) => {
-                   this.gameObjects.forEach((gameObject: GameObject) => {
-                       if (target != gameObject) Collider.collidingObjects(gameObject, target);
-                   });
-               });
+                this.scoreElement.text = `${score[0]}     ${score[1]}`;
+                this.backgroundHue.hue(hue_value, false);
 
-               this.gameObjects.forEach((gameObject: GameObject) => {
-                   gameObject.update(delta);
-               });
-               
-               if (this.remove_gameObjects.length > 0) this.removeObjects();
-           
-               this.debug.clear();
-               if (this.isDebug) this.debug.debugDraw(this.gameObjects);
-           }
+                //hue_value += 1;
+                this.collider_gameObjects.forEach((target: UIGameObject) => {
+                    this.gameObjects.forEach((gameObject: UIGameObject) => {
+                        if (target != gameObject) Collider.collidingObjects(gameObject, target);
+                    });
+                });
+
+                this.gameObjects.forEach((gameObject: UIGameObject) => {
+                    gameObject.update(delta);
+                });
+
+                if (this.remove_gameObjects.length > 0) this.removeObjects();
+
+                this.debug.debugDraw(this.gameObjects);
+            }
         });
     }
-
-    public static add(gameObject: GameObject) {
-        Game.instance.gameObjects.push(gameObject);
-        Game.instance.app.stage.addChild(gameObject.getDisplayObject);
-        if (gameObject?.onCollide != undefined) Game.instance.collider_gameObjects.push(gameObject);
-        if (gameObject?.onKeyDown != undefined) Game.instance.keydown_gameObjects.push(gameObject);
-        if (gameObject?.onKeyUp != undefined) Game.instance.keyup_gameObjects.push(gameObject);
+    public add(gameObject: UIGameObject) {
+        super.add(gameObject);
+        this.app.stage.addChild(gameObject.displayObject);
     }
 
-    public static remove(gameObject: GameObject) {
-        Game.instance.remove_gameObjects.push(gameObject);
-    }
-
-    private removeObjects() {
-
-        this.collider_gameObjects = this.collider_gameObjects.filter((value: GameObject) => !this.remove_gameObjects.includes(value)) 
-        this.keydown_gameObjects = this.keydown_gameObjects.filter((value: GameObject) => !this.remove_gameObjects.includes(value)) 
-        this.keyup_gameObjects = this.keyup_gameObjects.filter((value: GameObject) => !this.remove_gameObjects.includes(value)) 
-        this.gameObjects = this.gameObjects.filter((value: GameObject) => !this.remove_gameObjects.includes(value)) 
-        this.remove_gameObjects.forEach((gameObject: GameObject) => gameObject?.onDestroy?.());
-        this.app.stage.removeChild(...this.remove_gameObjects.map(e => e.getDisplayObject));
-        this.remove_gameObjects.length = 0;
-    }
-
-    static applyOnAllObjects(func: (gameObject: GameObject) => void) {
-        Game.instance.gameObjects.forEach((gameObject: GameObject) => {
-            func(gameObject);
-        });
-    }
-
-    static get width(){
-        return   Game.instance.app.view.width
-    }
-
-    static get height(){
-        return   Game.instance.app.view.height
-    }
-    
-    static get app(){
-        return   Game.instance.app
-    }
-
-    static getObjectByTag(tag: string): GameObject | undefined {
-        return Game.instance.gameObjects.find((gameObject: GameObject) => gameObject.tag === tag);
+    protected removeObjects(): void {
+        this.app.stage.removeChild(...this.remove_gameObjects.map((e) => e.displayObject));
+        this.remove_gameObjects.forEach(e => e.displayObject.destroy());
+        super.removeObjects();
     }
 }

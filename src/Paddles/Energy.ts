@@ -1,18 +1,15 @@
 import * as PIXI from 'pixi.js';
-import { Game } from '../Game';
+import { UIGame } from '../Game';
 import { Vector2D } from '../utils/Vector';
 
 export class Energy {
 
-    private energyCur: number;
-    private energyMax: number;
-    private energyBar: PIXI.Graphics;
+    protected energyCur: number;
+    protected energyMax: number;
 
-    constructor(player: string) {
+    constructor() {
         this.energyCur = 100;
         this.energyMax = 100;
-        this.energyBar = new PIXI.Graphics();
-        this.printEnergy(player);
     }
 
     get energy(): number {
@@ -45,6 +42,21 @@ export class Energy {
         return this.energyCur == this.energyMax;
     }
 
+    update(player: string, delta: number): void {        
+        if (this.energyCur < this.energyMax) {
+            this.energyCur += 0.5 * delta;
+        }
+    }
+}
+
+export class UIEnergy extends Energy {
+    public energyBar: PIXI.Graphics;
+    constructor(player: string, private readonly game: UIGame) {
+        super();
+        this.energyBar = new PIXI.Graphics();
+        this.printEnergy(player);
+    }
+
     getEnergyBarPosition(player: string): Vector2D {
         const position: Vector2D = new Vector2D(0, 0);
 
@@ -54,7 +66,7 @@ export class Energy {
         } 
         else if (player === "Player2") 
         {
-            position.x = Game.width - this.energyMax - 10;
+            position.x = this.game.width - this.energyMax - 10;
             position.y = 18;
         }
         else if (player === "Player3")
@@ -64,7 +76,7 @@ export class Energy {
         }
         else if (player === "Player4")
         {
-            position.x = Game.width - this.energyMax - 10;
+            position.x = this.game.width - this.energyMax - 10;
             position.y = 40;
         }
         return position;
@@ -74,7 +86,6 @@ export class Energy {
         
         const energyBarPosition = this.getEnergyBarPosition(player);
         this.energyBar.clear();
-        this.energyBar = new PIXI.Graphics();
         this.energyBar.x = energyBarPosition.x;
         this.energyBar.y = energyBarPosition.y;
 
@@ -87,15 +98,11 @@ export class Energy {
             this.energyBar.drawRect(this.energy, 0, this.energyMax - this.energy, 8);
             this.energyBar.endFill();
         }
-        Game.app.stage.addChild(this.energyBar);
+        this.game.app.stage.addChild(this.energyBar);
     }
 
     update(player: string, delta: number): void {
-        
+        super.update(player, delta);
         this.printEnergy(player);
-        
-        if (this.energyCur < this.energyMax) {
-            this.energyCur += 0.5 * delta;
-        }
     }
 }

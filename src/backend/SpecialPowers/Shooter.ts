@@ -1,10 +1,7 @@
 import { Bar } from "../Paddles/Bar";
 import { Vector2D } from "../utils/Vector";
-import { Game, UIGame } from "../Game";
-import * as PIXI from 'pixi.js';
+import { Game } from "../Game";
 import { UIBall } from "../Ball";
-import { UIPlayer } from "../Paddles/Player";
-import { UIBot } from "../Paddles/Bot";
 
 export class Shooter {
     protected line: {start: Vector2D, end: Vector2D}
@@ -93,32 +90,5 @@ export class Shooter {
             }
             return true;
         }
-    }
-}
-
-export class UIShooter extends Shooter {
-    public displayObject: PIXI.Graphics;
-    constructor(shooter: Bar, game: UIGame) {
-        super(shooter, game);
-        this.displayObject = new PIXI.Graphics();
-    }
-
-    shootBall(shooter: UIPlayer | UIBot): void {
-        super.shootBall(shooter);
-        this.displayObject.clear();
-        //shooter.setDisplayObjectCoords(shooter.getCenter);
-    }
-
-    update(delta: number, shooter: UIPlayer | UIBot): boolean {
-        this.displayObject.clear();
-        if (super.update(delta, shooter) === false) {
-            (this.game as UIGame).app.stage.removeChild(this.displayObject);
-            return false;
-        }
-        this.displayObject.lineStyle(4, 0xff0000, 1);
-        this.displayObject.moveTo(this.line.start.x, this.line.start.y);
-        this.displayObject.lineTo(this.line.end.x, this.line.end.y);
-        (this.game as UIGame).app.stage.addChild(this.displayObject);
-        return true;
     }
 }

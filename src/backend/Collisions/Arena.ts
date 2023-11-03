@@ -2,7 +2,6 @@ import { GameObject } from '../GameObject';
 import { Game } from "../Game";
 import { Polygon } from './Polygon';
 import { Vector2D } from '../utils/Vector';
-import * as PIXI from 'pixi.js';
 
 export class ArenaWall extends GameObject {
     constructor( public readonly position: Vector2D, public readonly size: Vector2D, private readonly color: number, game: Game) {
@@ -16,20 +15,6 @@ export class ArenaWall extends GameObject {
 
     onCollide(): void {
         
-    }
-}
-
-export class UIArenaWall extends ArenaWall {
-    public readonly displayObject: PIXI.Graphics;
-
-    constructor(position: Vector2D, size: Vector2D, color: number, game: Game) {
-        super(position, size, color, game);
-        this.displayObject = new PIXI.Graphics();
-        this.displayObject.beginFill(color);
-        this.displayObject.drawRect(0, 0, size.x, size.y);
-        this.displayObject.endFill();
-        this.displayObject.x = position.x;
-        this.displayObject.y = position.y;
     }
 }
 
@@ -61,8 +46,7 @@ const createArena = (game: Game, position: Vector2D, size: Vector2D): number[] =
 export class ArenaPolygon extends Polygon {
     constructor(position:Vector2D, size: Vector2D, game: Game ) {
         const points = createArena(game, position, size);
-        const arenaPolygon = new PIXI.Polygon(points);
-        super(arenaPolygon);
+        super();
 
         this.vertices = 4;
         if (position.x === 0 && position.y === 0) {

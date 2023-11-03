@@ -1,10 +1,6 @@
 import { Bar } from "./Bar";
 import { Vector2D } from "../utils/Vector";
-import { Game, UIGame } from "../Game";
-import { UIMana } from './Mana';
-import { UIEnergy } from './Energy';
-
-import * as PIXI from 'pixi.js';
+import { Game } from "../Game";
 
 const UP    = new Vector2D(0, -5);
 const DOWN  = new Vector2D(0, 5);
@@ -56,43 +52,5 @@ export class Bot extends Bar {
             this.effect.update(delta, this);
         }
         return ret;
-    }
-}
-
-export class UIBot extends Bot {
-    public displayObject: PIXI.Sprite;
-    constructor(texture: PIXI.Texture, x: number, y: number, tag: string, public direction: Vector2D, uigame: UIGame)
-    {
-        super(x, y, tag, direction, uigame);
-        this.displayObject = PIXI.Sprite.from(texture);
-        this.displayObject.anchor.set(0.5);
-        this.displayObject.x = x;
-        this.displayObject.y = y;
-        this.displayObject.scale.set(0.5);
-        this.mana = new UIMana(this.tag);
-        this.energy = new UIEnergy(this.tag);
-    }
-
-    setScaleDisplayObject(scale: number): void {
-        this.displayObject.height = this.height * scale;
-        this.displayObject.width = this.width;
-    }
-
-    setDisplayObjectCoords(center: Vector2D): void {
-        this.displayObject.x = center.x;
-        this.displayObject.y = center.y;
-    }
-
-    setScale(scale: number): void {
-        super.setScale(scale);
-        this.setScaleDisplayObject(scale);
-        this.setDisplayObjectCoords(this.center);
-    }
-
-    update(delta: number): boolean {
-        if (super.update(delta) === true) this.displayObject.y = this.center.y; 
-        this.displayObject.x = this.center.x;
-        this.displayObject.y = this.center.y;
-        return true;
     }
 }
