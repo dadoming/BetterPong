@@ -26,6 +26,7 @@ import { Bot } from './Paddles/Bot';
 import { SpecialPower, SpecialPowerType, UISpecialPower } from './SpecialPowers/SpecialPower';
 
 import { KeyControls } from './Paddles/Player';
+import { UIMarioBox } from './SpecialPowers/MarioBox';
 
 /**
  *
@@ -163,7 +164,7 @@ export class UIGame extends Game {
         // p1.getDisplayObject.filters = [this.blueTranform];
         // this.backgroundHue.hue(hue_value, false);
         // this.app.stage.filters = [this.backgroundHue];
-
+                this.add(new UIMarioBox(this));
         document.body.appendChild(this.app.view as HTMLCanvasElement);
 
         this.scoreStyle = new PIXI.TextStyle({

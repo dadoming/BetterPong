@@ -27,5 +27,11 @@
         "texture": "../../assets/iceball.png",
         "diameter": 32,
         "vertices": 8
+    },
+
+    "marioBox": {
+        "texture": "../../assets/mariobox.png",
+        "diameter": 32,
+        "vertices": 8
     }
 }

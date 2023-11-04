@@ -1,4 +1,4 @@
-import { GameObject } from "../GameObject";
+import { GameObject, UIGameObject } from "../GameObject";
 import { Vector2D } from "../utils/Vector";
 import { GhostTex, specialpowerConfig } from "../main";
 import { SpecialPower } from "./SpecialPower";
@@ -40,10 +40,11 @@ export class UIGhost extends Ghost {
         return true;
     }
 
-    onCollide(target: GameObject): boolean {
+    onCollide(target: UIGameObject): boolean {
         if (super.onCollide(target) === true)
         {
             this.game.remove(this);
+            target.displayObject.alpha = 0;
             return true;
         }
         return false;

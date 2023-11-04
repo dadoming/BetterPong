@@ -103,6 +103,12 @@ export interface specialPowerObjectConfig {
         diameter: number,
         vertices: number
     },
+
+    marioBox: {
+        texture: string,
+        diameter: number,
+        vertices: number
+    }
 }
 const specialpowerConfig: specialPowerObjectConfig = _specialpowerConfig as specialPowerObjectConfig;
 export { specialpowerConfig };
@@ -145,6 +151,7 @@ export const IceTex = await PIXI.Texture.fromURL('assets/iceball.png');
 export const SparkTex = await PIXI.Texture.fromURL('assets/spark.png');
 export const FireTex = await PIXI.Texture.fromURL('assets/fireball.png');
 export const GhostTex = await PIXI.Texture.fromURL('assets/ghost.png');
+export const MarioBoxTex = await PIXI.Texture.fromURL('assets/mariobox.png');
 
 
 const game = new UIGame(1024, 800);

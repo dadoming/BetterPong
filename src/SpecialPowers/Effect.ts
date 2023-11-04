@@ -1,5 +1,5 @@
 import { Ball } from "../Ball";
-import { GameObject } from "../GameObject";
+import { UIGameObject } from "../GameObject";
 import { Vector2D } from "../utils/Vector";
 
 
@@ -8,9 +8,8 @@ export class Effect {
     private effectMax: number;
     private effectType: string;
     
-    constructor(effectName: string, target: GameObject) {
+    constructor(effectName: string, target: UIGameObject) {
         this.effectCur = 0;
-        this.effectMax = 100;
         this.effectType = effectName;
         switch (this.effectType) {
             case 'SLOW':
@@ -34,9 +33,8 @@ export class Effect {
                 target.setEffectVelocity(new Vector2D(1, 1));
                 break;
             case 'INVISIBLE':
-                this.effectMax = 50;
+                this.effectMax = 80;
                 target.increaseHitAmount();
-                //target.displayObject.alpha = 0;
                 target.setEffectVelocity(new Vector2D(1, 1));
                 break;
             default:
@@ -65,7 +63,7 @@ export class Effect {
         return this.effectCur >= this.effectMax;
     }
 
-    update(delta: number, obj: GameObject): void {
+    update(delta: number, obj: UIGameObject): void {
         this.effectCur += delta * 0.5;
         if (this.effectCur >= this.effectMax) {
             obj.decreaseHitAmount();
@@ -79,8 +77,8 @@ export class Effect {
                 }
                 obj.setEffect(undefined);
 
-                //if (obj.displayObject.alpha === 0)
-                //    obj.displayObject.alpha = 1;
+                if (obj.displayObject.alpha === 0)
+                    obj.displayObject.alpha = 1;
             }
         }
     }

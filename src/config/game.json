@@ -8,7 +8,7 @@
     "p1": {
         "name": "Player 1",
         "hexColor": "#ff0000",
-        "specialPower": "Bubble",
+        "specialPower": "Ghost",
         "paddleSkin": "../../paddle.png"
     },
 

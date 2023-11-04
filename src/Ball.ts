@@ -1,5 +1,5 @@
 import * as PIXI from 'pixi.js';
-import { GameObject } from './GameObject';
+import { GameObject, UIGameObject } from './GameObject';
 import { BallPolygon } from './Collisions/Polygon';
 import { Vector2D } from './utils/Vector';
 import { Player } from './Paddles/Player';
@@ -8,8 +8,11 @@ import { gameConfig, score } from './main';
 import { Game } from './Game';
 import { Bubble } from './SpecialPowers/Bubble';
 import { ArenaWall } from './Collisions/Arena';
+import { Bar } from './Paddles/Bar';
+import { MarioBox } from './SpecialPowers/MarioBox';
 
 export class Ball extends GameObject {
+    lastPlayerCollision: Bar | undefined;
     constructor(x: number, y: number, game: Game) {
         super('Bolinha', game);
         this.center = new Vector2D(x, y);
@@ -41,7 +44,8 @@ export class Ball extends GameObject {
         this.velocity = this.getRandomVelocity();
         this.acceleration = 1;
         this._move = true;
-        if (this.effect !== undefined) this.effect?.setStopEffect();
+        this.effect?.setStopEffect?.();
+        this.collider.lastCollision = undefined;
     }
 
     resetBall(x: number): void {
@@ -82,14 +86,15 @@ export class Ball extends GameObject {
                 this.center.y + (this.move ? this.velocity.y * this.acceleration * delta : 0)
             )
         );
-        if (this.effect !== undefined) {
-            this.effect.update(delta, this);
-        }
+        this.effect?.update(delta, this as any as UIGameObject);
     }
 
     // Nao esquecer de adicionar aqui os powers que tenham colisao com a bola
     onCollide(target: GameObject): void {
         this.collider.lastCollision = target.collider;
+        if (target instanceof Bar)
+                this.lastPlayerCollision = target;
+
         if (target instanceof ArenaWall) {
             this.velocity.y = -this.velocity.y;
         } else if (target instanceof Player || target instanceof Bot || target instanceof Bubble) {
@@ -120,6 +125,8 @@ export class Ball extends GameObject {
                 this.setVelocity(new Vector2D(-this.getVelocity.x, -this.getVelocity.y).multiply(this.effectVelocity));
                 return;
             }
+        } else if (target instanceof MarioBox) {
+            //TODO:
         }
     }
 }
@@ -143,6 +150,9 @@ export class UIBall extends Ball {
         super.update(delta);
         this.displayObject.x = this.center.x;
         this.displayObject.y = this.center.y;
+        if (this.effect !== undefined) {
+            this.effect.update(delta, this);
+        }
     }
 
     onCollide(target: GameObject): void {
