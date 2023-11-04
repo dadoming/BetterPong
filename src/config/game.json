@@ -8,14 +8,14 @@
     "p1": {
         "name": "Player 1",
         "hexColor": "#ff0000",
-        "specialPower": "Fire",
+        "specialPower": "Bubble",
         "paddleSkin": "../../paddle.png"
     },
 
     "p2": {
         "name": "Player 2",
         "hexColor": "#0000ff",
-        "specialPower": "Ghost",
+        "specialPower": "Fire",
         "paddleSkin": "../../paddle.png"
     },
 

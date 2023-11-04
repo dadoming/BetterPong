@@ -45,6 +45,8 @@ export class Game {
     protected keydown_gameObjects: GameObject[] = [];
     protected keyup_gameObjects: GameObject[] = [];
 
+    public delta: number = 0;
+
     // add array for changed objects to send to client
 
     constructor(public width: number, public height: number) {
@@ -98,19 +100,25 @@ export class Game {
     // replicate pixijs game loop where the delta value has a maximum of 1 that means high performance or lower but approximate
     start() {
         let lastTimeStamp = performance.now();
-        let accumulator = 0;
+        let accFrames = 0;
+        let lastFPSTimestamp = performance.now();
         const fixedDeltaTime: number = 0.01667; // 60 FPS in seconds
-        const tick = (timestamp: number) => {
+        const tick = () => {
+            const timestamp = performance.now();
             const deltaTime = (timestamp - lastTimeStamp) / 1000;
+            accFrames ++;
             lastTimeStamp = timestamp;
-            accumulator += deltaTime;
-            while (accumulator >= fixedDeltaTime) {
-                this.update(fixedDeltaTime);
-                accumulator -= fixedDeltaTime;
+            this.delta = deltaTime / fixedDeltaTime
+            this.update(this.delta);
+            if (timestamp - lastFPSTimestamp > 1000) {
+                console.log(accFrames);
+                accFrames = 0;
+                lastFPSTimestamp = timestamp;
             }
-            requestAnimationFrame(tick);
+            //requestAnimationFrame(tick);
         };
-        requestAnimationFrame(tick);
+        setInterval(tick, 3);
+        //requestAnimationFrame(tick);
     }
 
     update(delta: number) {

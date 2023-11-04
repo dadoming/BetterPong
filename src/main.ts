@@ -147,5 +147,5 @@ export const FireTex = await PIXI.Texture.fromURL('assets/fireball.png');
 export const GhostTex = await PIXI.Texture.fromURL('assets/ghost.png');
 
 
-const game = new UIGame(800, 600);
+const game = new UIGame(1024, 800);
 game.start();

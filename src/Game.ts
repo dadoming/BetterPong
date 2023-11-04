@@ -55,6 +55,8 @@ export class Game {
     protected keydown_gameObjects: UIGameObject[] = [];
     protected keyup_gameObjects: UIGameObject[] = [];
 
+    public delta: number = 0;
+
     // add array for changed objects to send to client
 
     constructor(public width: number, public height: number) {}
@@ -120,7 +122,7 @@ export class UIGame extends Game {
         const p1 = new UIPlayer(
             P1Tex,
             P_START_DIST,
-            this.app.view.height / 2,
+            this.height / 2,
             keys1,
             'Player1',
             new Vector2D(1, 1),
@@ -133,28 +135,28 @@ export class UIGame extends Game {
 
         const p2 = new UIPlayer(
             P2Tex,
-            this.app.view.width - P_START_DIST,
-            this.app.view.height / 2,
+            this.width - P_START_DIST,
+            this.height / 2,
             keys2,
             'Player2',
             new Vector2D(-1, 1),
-            'Bubble',
+            'Fire',
             this
         );
         this.add(p2);
         //this.add(new Bot(P2Tex, this.app.view.width - P_START_DIST, this.app.view.height / 2, 'Player2', new Vector2D(-1, 1)));
         //this.add(new Bot(P2Tex, MULTIPLAYER_START_POS, this.app.view.height / 2, 'Player3', new Vector2D(-1, 1)));
         //this.add(new Bot(P2Tex, this.app.view.width - MULTIPLAYER_START_POS, this.app.view.height / 2, 'Player4', new Vector2D(-1, 1)));
-        this.add(new UIArenaWall(new Vector2D(0, 0), new Vector2D(this.app.view.width, ARENA_SIZE), 0x00abff, this));
+        this.add(new UIArenaWall(new Vector2D(0, 0), new Vector2D(this.width, ARENA_SIZE), 0x00abff, this));
         this.add(
             new UIArenaWall(
-                new Vector2D(0, this.app.view.height - ARENA_SIZE),
-                new Vector2D(this.app.view.width, ARENA_SIZE),
+                new Vector2D(0, this.height - ARENA_SIZE),
+                new Vector2D(this.width, ARENA_SIZE),
                 0x00abff,
                 this
             )
         );
-        this.add(new UIBall(this.app.view.width / 2, this.app.view.height / 2, BallTex, this));
+        this.add(new UIBall(this.width / 2, this.height / 2, BallTex, this));
 
         // true or false?
         // this.blueTranform.hue(120, false);
@@ -197,9 +199,13 @@ export class UIGame extends Game {
             }
         });
         if (e.key === 't') {
-            this.getObjectByTag('Bolinha')?.setMove(!this.run);
             this.run = !this.run;
         }
+
+        if (e.key === 'v') {
+            this.getObjectByTag('Bolinha')?.setMove(!this.run);
+        }
+
         if (e.key === 'p') this.debug.isDebug = !this.debug.isDebug;
     };
     handleKeyUp = (e: KeyboardEvent) => {
@@ -210,17 +216,38 @@ export class UIGame extends Game {
 
     start() {
         super.start();
-        this.app.ticker.minFPS = 30;
-        this.app.ticker.maxFPS = 120;
+
         const text = new PIXI.Text(this.app.ticker.FPS, { fill: 'white' });
         text.x = 200;
         text.y = 10;
         this.app.stage.addChild(text);
 
-        this.app.ticker.add((delta) => {
+        let lastTimeStamp = performance.now();
+        let accFrames = 0;
+        let lastFPSTimestamp = performance.now();
+        const fixedDeltaTime: number = 0.01667; // 60 FPS in seconds
+        const tick = () => {
+            const timestamp = performance.now();
+            const deltaTime = (timestamp - lastTimeStamp) / 1000;
+            accFrames ++;
+            lastTimeStamp = timestamp;
+            this.delta = deltaTime / fixedDeltaTime
+            this.update(this.delta);
+            if (timestamp - lastFPSTimestamp > 1000) {
+                console.log(accFrames);
+                text.text = Math.round(accFrames).toString();
+                accFrames = 0;
+                lastFPSTimestamp = timestamp;
+            }
+            //requestAnimationFrame(tick);
+        };
+        setInterval(tick, 3);
+        //requestAnimationFrame(tick);
+    }
+
+    update(delta: number) {
+
             if (this.run) {
-                console.log(delta)
-                text.text = Math.round(this.app.ticker.FPS).toString();
 
                 this.gameObjects.forEach((gameObject: UIGameObject) => gameObject.collider.reset());
 
@@ -242,7 +269,7 @@ export class UIGame extends Game {
 
                 this.debug.debugDraw(this.gameObjects);
             }
-        });
+        
     }
     public add(gameObject: UIGameObject) {
         super.add(gameObject);

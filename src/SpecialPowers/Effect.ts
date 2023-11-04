@@ -36,7 +36,7 @@ export class Effect {
             case 'INVISIBLE':
                 this.effectMax = 50;
                 target.increaseHitAmount();
-                //target.getDisplayObject.alpha = 0;
+                //target.displayObject.alpha = 0;
                 target.setEffectVelocity(new Vector2D(1, 1));
                 break;
             default:
